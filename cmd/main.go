@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	ui "sfmsonds/package/UI"
+	files "sfmsonds/package/files"
 
 	"gioui.org/app"
 	"gioui.org/io/system"
@@ -21,6 +23,13 @@ func main() {
 			app.Title("SFMSongs"),
 			app.Size(unit.Dp(400), unit.Dp(600)),
 		)
+		// Getting files of music
+		musics, err := files.GetMusicInFolder()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Print(musics)
+
 		if err := draw(w); err != nil {
 			log.Fatal(err)
 		}
