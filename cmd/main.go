@@ -36,9 +36,12 @@ func draw(w *app.Window) error {
 	var ops op.Ops
 
 	// Play buttons
-	var playPrevButton widget.Clickable
-	var playCurrencyButton widget.Clickable
-	var playNextButton widget.Clickable
+	var (
+		playPrevButton     widget.Clickable
+		playCurrencyButton widget.Clickable
+		playNextButton     widget.Clickable
+	)
+
 	th := material.NewTheme()
 
 	// listen for events in the window.
