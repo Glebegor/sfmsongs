@@ -1,6 +1,8 @@
 package music
 
-import "io/fs"
+import (
+	"fmt"
+)
 
 // Function to play music
 
@@ -14,13 +16,16 @@ type musicPlayer interface {
 	StopPlayMusic() error
 }
 
-func (m *Music) StartPlayMusic(filePath fs.DirEntry) error {
+func (m *Music) StartPlayMusic(filePath string) error {
+	fmt.Print("Music on")
+	m.PlayMusic(filePath)
 	return nil
 }
-func (m *Music) PlayMusic(filePath fs.DirEntry) error {
+func (m *Music) PlayMusic(filePath string) error {
 	return nil
 }
 func (m *Music) StopPlayMusic() error {
+	fmt.Print("Music off")
 	return nil
 }
 

@@ -1,16 +1,27 @@
 package files
 
 import (
+	"fmt"
 	"os"
 )
 
 // Getting files in path
-func GetMusicInFolder() ([]os.DirEntry, error) {
-	// Path
-	path := "C:/Users/glebe/Music/Music"
+
+func GetMusicInFolder(path string) ([]string, error) {
+	var data []string
+
+	// Getting all mp3 files
 	files, err := os.ReadDir(path)
 	if err != nil {
-		return files, err
+		return data, err
 	}
-	return files, nil
+	// Getting all mp3 files paths
+	for _, file := range files {
+		if !file.IsDir() {
+			data = append(data, path+file.Name())
+		}
+	}
+	fmt.Print(data)
+
+	return data, nil
 }
