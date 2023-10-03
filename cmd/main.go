@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	ui "sfmsonds/package/UI"
-	files "sfmsonds/package/files"
+	"sfmsonds/package/files"
+	"sfmsonds/package/music"
 
 	"gioui.org/app"
 	"gioui.org/io/system"
@@ -23,13 +23,6 @@ func main() {
 			app.Title("SFMSongs"),
 			app.Size(unit.Dp(400), unit.Dp(600)),
 		)
-		// Getting files of music
-		musics, err := files.GetMusicInFolder()
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Print(musics)
-
 		if err := draw(w); err != nil {
 			log.Fatal(err)
 		}
@@ -51,6 +44,12 @@ func draw(w *app.Window) error {
 		playNextButton     widget.Clickable
 	)
 
+	// Play and Stop vars of the music
+	musicPlayer := new(music.Music)
+	musicPlayer.Music_is_play = false
+	musicArray, _ := files.GetMusicInFolder()
+
+	// Themes
 	th := material.NewTheme()
 
 	// listen for events in the window.
@@ -58,7 +57,23 @@ func draw(w *app.Window) error {
 		switch e := e.(type) {
 
 		case system.FrameEvent:
+			if playCurrencyButton.Clicked() {
+				if musicPlayer.Music_is_play {
+					fmt.Print("Off music")
+					musicPlayer.Music_is_play = false
+					if err := musicPlayer.StopPlayMusic(); err != nil {
+						fmt.Errorf(err.Error())
+					}
+				} else {
+					fmt.Print("On music")
+					musicPlayer.Music_is_play = true
+					if err := musicPlayer.StartPlayMusic(musicArray[0]); err != nil {
+						fmt.Errorf(err.Error())
+					}
+				}
+			}
 			gtx := layout.NewContext(&ops, e)
+			// Events
 
 			// Creating layout
 			layout.Flex{
@@ -76,21 +91,36 @@ func draw(w *app.Window) error {
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
 									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
-									return ui.CreateButton(gtx, "Prev", playPrevButton, margins, th)
+									return margins.Layout(gtx,
+										func(gtx layout.Context) layout.Dimensions {
+											playPBtn := material.Button(th, &playPrevButton, "Prev")
+											return playPBtn.Layout(gtx)
+										},
+									)
 								},
 							),
 							// Play btn
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
 									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
-									return ui.CreateButton(gtx, "Play", playCurrencyButton, margins, th)
+									return margins.Layout(gtx,
+										func(gtx layout.Context) layout.Dimensions {
+											playPBtn := material.Button(th, &playCurrencyButton, "Play")
+											return playPBtn.Layout(gtx)
+										},
+									)
 								},
 							),
 							// Next btn
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
 									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
-									return ui.CreateButton(gtx, "Next", playNextButton, margins, th)
+									return margins.Layout(gtx,
+										func(gtx layout.Context) layout.Dimensions {
+											playPBtn := material.Button(th, &playNextButton, "Next")
+											return playPBtn.Layout(gtx)
+										},
+									)
 								},
 							),
 						)

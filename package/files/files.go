@@ -1,12 +1,11 @@
 package files
 
 import (
-	"io/fs"
 	"os"
 )
 
 // Getting files in path
-func GetMusicInFolder() ([]fs.DirEntry, error) {
+func GetMusicInFolder() ([]os.DirEntry, error) {
 	// Path
 	path := "C:/Users/glebe/Music/Music"
 	files, err := os.ReadDir(path)
