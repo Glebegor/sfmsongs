@@ -18,7 +18,7 @@ func GetMusicInFolder(path string) ([]string, error) {
 	// Getting all mp3 files paths
 	for _, file := range files {
 		if !file.IsDir() {
-			data = append(data, path+file.Name())
+			data = append(data, path+"/"+file.Name())
 		}
 	}
 	fmt.Print(data)

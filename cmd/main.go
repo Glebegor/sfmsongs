@@ -46,7 +46,7 @@ func draw(w *app.Window) error {
 
 	// Play and Stop vars of the music
 	musicPlayer := new(music.Music)
-	musicPlayer.Music_is_play = false
+	musicPlayer.MusicIsPlay = false
 	path := "C:/Users/glebe/Music/Music"
 	musicArray, err := files.GetMusicInFolder(path)
 	if err != nil {
@@ -61,13 +61,11 @@ func draw(w *app.Window) error {
 
 		case system.FrameEvent:
 			if playCurrencyButton.Clicked() {
-				if musicPlayer.Music_is_play {
-					musicPlayer.Music_is_play = false
+				if musicPlayer.MusicIsPlay {
 					if err := musicPlayer.StopPlayMusic(); err != nil {
 						fmt.Errorf(err.Error())
 					}
 				} else {
-					musicPlayer.Music_is_play = true
 					if err := musicPlayer.StartPlayMusic(musicArray[0]); err != nil {
 						fmt.Errorf(err.Error())
 					}
