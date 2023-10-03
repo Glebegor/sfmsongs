@@ -2,39 +2,58 @@ package music
 
 import (
 	"fmt"
-	"sync"
+	"time"
 
+	oto "github.com/ebitengine/oto/v3"
 	"github.com/hajimehoshi/go-mp3"
-	"github.com/hajimehoshi/oto"
 )
 
-// Function to play music
-
+// truct to play music
 type Music struct {
-	MusicIsPlay bool
-	Player      *oto.Player
-	Decoder     *mp3.Decoder
-	Paused      bool
-	PauseMutex  sync.Mutex
+	IsPlay   bool
+	dec      *mp3.Decoder
+	context  *oto.Context
+	player   *oto.Player
+	paused   bool
+	position time.Duration
+	stopCh   chan struct{} // Channel for signaling stop
 }
 
-func (m *Music) StartPlayMusic(filePath string, sec int) error {
-	err := m.PlayMusic(filePath, sec)
-	if err != nil {
-		return err
+// NewPlayer
+func NewPlayer() *Music {
+	return &Music{
+		stopCh: make(chan struct{}),
 	}
+}
+
+// Starting of play
+func (m *Music) StartPlayMusic(filePath string, sec int) error {
+	go func() {
+		err := m.PlayMusic(filePath, sec)
+		if err != nil {
+			fmt.Printf("Error playing music: %v\n", err)
+		}
+	}()
+
 	return nil
 }
 
+// Playing of music
 func (m *Music) PlayMusic(filePath string, sec int) error {
-	fmt.Print("Music started play\n")
 	return nil
 }
 
+// Pausing of music
 func (m *Music) PauseMusic() {
-	fmt.Print("Music ended play\n")
+	fmt.Print("\nMusic paused\n")
 }
 
+// Stopping of music
 func (m *Music) StopPlayMusic() {
+	fmt.Print("\nMusic stopped\n")
+}
 
+// Length of music in seconds
+func (m *Music) LengthOfMusic(filePath string) int {
+	return 0
 }

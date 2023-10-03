@@ -46,8 +46,8 @@ func draw(w *app.Window) error {
 	)
 	float1 := new(widget.Float)
 	// Play and Stop vars of the music
-	musicPlayer := new(music.Music)
-	musicPlayer.MusicIsPlay = false
+	musicPlayer := music.NewPlayer()
+	musicPlayer.IsPlay = false
 	path := "C:/Users/glebe/Music/Music"
 	musicArray, err := files.GetMusicInFolder(path)
 	if err != nil {
@@ -72,14 +72,14 @@ func draw(w *app.Window) error {
 			}
 			if playCurrencyButton.Clicked() {
 
-				if musicPlayer.MusicIsPlay {
+				if musicPlayer.IsPlay {
 
-					musicPlayer.MusicIsPlay = false
+					musicPlayer.IsPlay = false
 					musicPlayer.PauseMusic()
-				} else if !musicPlayer.MusicIsPlay {
+				} else if !musicPlayer.IsPlay {
 
-					musicPlayer.MusicIsPlay = true
-					musicPlayer.StartPlayMusic(musicArray[idOfMusicInDir], 0)
+					musicPlayer.IsPlay = true
+					musicPlayer.StartPlayMusic(musicArray[idOfMusicInDir], int(float1.Value))
 				}
 			}
 			gtx := layout.NewContext(&ops, e)
@@ -100,10 +100,10 @@ func draw(w *app.Window) error {
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
 									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
-										layout.Flexed(1, material.Slider(th, float1, 0, 2.00).Layout),
+										layout.Flexed(1, material.Slider(th, float1, 0, 180).Layout),
 										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 											return layout.UniformInset(unit.Dp(18)).Layout(gtx,
-												material.Body1(th, fmt.Sprintf("%.2f", float1.Value)).Layout,
+												material.Body1(th, fmt.Sprintf("%.0f", float1.Value)).Layout,
 											)
 										}),
 									)
