@@ -42,8 +42,9 @@ func draw(w *app.Window) error {
 		playPrevButton     widget.Clickable
 		playCurrencyButton widget.Clickable
 		playNextButton     widget.Clickable
+		idOfMusicInDir     int
 	)
-
+	float1 := new(widget.Float)
 	// Play and Stop vars of the music
 	musicPlayer := new(music.Music)
 	musicPlayer.MusicIsPlay = false
@@ -51,6 +52,9 @@ func draw(w *app.Window) error {
 	musicArray, err := files.GetMusicInFolder(path)
 	if err != nil {
 		fmt.Errorf(err.Error())
+	}
+	if len(musicArray) != 0 {
+		idOfMusicInDir = 0
 	}
 	// Themes
 	th := material.NewTheme()
@@ -60,15 +64,22 @@ func draw(w *app.Window) error {
 		switch e := e.(type) {
 
 		case system.FrameEvent:
+			if playPrevButton.Clicked() {
+				idOfMusicInDir -= 1
+			}
+			if playNextButton.Clicked() {
+				idOfMusicInDir += 1
+			}
 			if playCurrencyButton.Clicked() {
+
 				if musicPlayer.MusicIsPlay {
-					if err := musicPlayer.StopPlayMusic(); err != nil {
-						fmt.Errorf(err.Error())
-					}
-				} else {
-					if err := musicPlayer.StartPlayMusic(musicArray[0]); err != nil {
-						fmt.Errorf(err.Error())
-					}
+
+					musicPlayer.MusicIsPlay = false
+					musicPlayer.PauseMusic()
+				} else if !musicPlayer.MusicIsPlay {
+
+					musicPlayer.MusicIsPlay = true
+					musicPlayer.StartPlayMusic(musicArray[idOfMusicInDir], 0)
 				}
 			}
 			gtx := layout.NewContext(&ops, e)
@@ -79,6 +90,28 @@ func draw(w *app.Window) error {
 				Axis:    layout.Vertical,
 				Spacing: layout.SpaceStart,
 			}.Layout(gtx,
+				// Slider to change start sec of music
+				layout.Rigid(
+					func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{
+							Axis:    layout.Horizontal,
+							Spacing: layout.Spacing(layout.Middle),
+						}.Layout(gtx,
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
+										layout.Flexed(1, material.Slider(th, float1, 0, 2.00).Layout),
+										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+											return layout.UniformInset(unit.Dp(18)).Layout(gtx,
+												material.Body1(th, fmt.Sprintf("%.2f", float1.Value)).Layout,
+											)
+										}),
+									)
+								},
+							),
+						)
+					},
+				),
 				// Buttons play next, play current, play prev
 				layout.Rigid(
 					func(gtx layout.Context) layout.Dimensions {
