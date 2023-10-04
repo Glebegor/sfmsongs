@@ -16,14 +16,21 @@ import (
 	"gioui.org/widget/material"
 )
 
+type App struct {
+	th  *material.Theme
+	ops layout.Context
+	w   *app.Window
+}
+
 func main() {
 	go func() {
 		// New window
-		w := app.NewWindow(
+		App := new(App)
+		App.w = app.NewWindow(
 			app.Title("SFMSongs"),
 			app.Size(unit.Dp(400), unit.Dp(600)),
 		)
-		if err := draw(w); err != nil {
+		if err := draw(App.w); err != nil {
 			log.Fatal(err)
 		}
 		// EXIT command
@@ -43,6 +50,7 @@ func draw(w *app.Window) error {
 		playCurrencyButton widget.Clickable
 		playNextButton     widget.Clickable
 		idOfMusicInDir     int
+		lenOfMusic         float32
 	)
 	float1 := new(widget.Float)
 	// Play and Stop vars of the music
@@ -58,8 +66,13 @@ func draw(w *app.Window) error {
 	if len(musicArray) != 0 {
 		idOfMusicInDir = 0
 	}
+
 	// Themes
 	th := material.NewTheme()
+
+	// Started music
+	lenMus, _ := musicPlayer.LengthOfMusic(musicArray[idOfMusicInDir])
+	lenOfMusic = float32(lenMus)
 
 	// listen for events in the window.
 	for e := range w.Events() {
@@ -69,11 +82,17 @@ func draw(w *app.Window) error {
 			if playPrevButton.Clicked() {
 				if idOfMusicInDir != 0 {
 					idOfMusicInDir -= 1
+					lenMus, _ := musicPlayer.LengthOfMusic(musicArray[idOfMusicInDir])
+					lenOfMusic = float32(lenMus)
+					float1.Value = 0
 				}
 			}
 			if playNextButton.Clicked() {
 				if idOfMusicInDir != len(musicArray)-1 {
 					idOfMusicInDir += 1
+					lenMus, _ := musicPlayer.LengthOfMusic(musicArray[idOfMusicInDir])
+					lenOfMusic = float32(lenMus)
+					float1.Value = 0
 				}
 			}
 			if playCurrencyButton.Clicked() {
@@ -85,9 +104,8 @@ func draw(w *app.Window) error {
 				} else if !musicPlayer.IsPlay {
 
 					musicPlayer.IsPlay = true
-					lenMus, _ := musicPlayer.LengthOfMusic(musicArray[idOfMusicInDir])
-					fmt.Print(lenMus)
-					musicPlayer.StartPlayMusic(musicArray[idOfMusicInDir], int(float1.Value))
+
+					musicPlayer.StartPlayMusic(musicArray[idOfMusicInDir], int(float1.Value), float1)
 				}
 			}
 			gtx := layout.NewContext(&ops, e)
@@ -108,7 +126,7 @@ func draw(w *app.Window) error {
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
 									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
-										layout.Flexed(1, material.Slider(th, float1, 0, 180).Layout),
+										layout.Flexed(1, material.Slider(th, float1, 0, lenOfMusic).Layout),
 										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 											return layout.UniformInset(unit.Dp(18)).Layout(gtx,
 												material.Body1(th, fmt.Sprintf("%.0f", float1.Value)).Layout,

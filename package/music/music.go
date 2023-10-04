@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"gioui.org/widget"
 	"github.com/hajimehoshi/go-mp3"
 	"github.com/hajimehoshi/oto/v2"
 )
@@ -28,11 +29,17 @@ func NewPlayer() *Music {
 }
 
 // Starting of play
-func (m *Music) StartPlayMusic(filePath string, sec int) error {
+func (m *Music) StartPlayMusic(filePath string, sec int, float1 *widget.Float) error {
 	go func() {
 		err := m.PlayMusic(filePath, sec)
 		if err != nil {
 			fmt.Printf("Error playing music: %v\n", err)
+		}
+	}()
+	go func() {
+		for {
+			float1.Value += 1
+			time.Sleep(1 * time.Second)
 		}
 	}()
 
@@ -86,6 +93,14 @@ func (m *Music) PlayMusic(filePath string, sec int) error {
 // Pausing of music
 func (m *Music) PauseMusic() {
 	fmt.Print("\nMusic paused\n")
+	// m.player.Pause()
+	// if m.paused == false {
+	// 	m.paused = true
+	// 	m.player.Pause()
+	// } else {
+	// 	m.player.Reset()
+	// }
+
 }
 
 // Stopping of music
