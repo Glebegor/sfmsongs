@@ -28,6 +28,10 @@ type App struct {
 	playNextButton     widget.Clickable
 	sliderLenOfMusic   widget.Float
 	optionsButton      widget.Clickable
+	repeatButton       widget.Clickable
+
+	// states of app
+	repeat bool
 
 	// Params of music
 	idOfMusicInDir int
@@ -74,7 +78,7 @@ func (a *App) draw(w *app.Window) error {
 	} else {
 		fmt.Errorf("Dont have mp3 files in folder")
 	}
-
+	a.repeat = false
 	// Themes
 	a.th = material.NewTheme()
 
@@ -86,6 +90,7 @@ func (a *App) draw(w *app.Window) error {
 	for e := range w.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
+			// Play by second
 			if !a.sliderLenOfMusic.Dragging() && a.sliderLenOfMusic.Changed() {
 				if a.Player.IsPlay {
 					a.Player.StopPlayMusic()
@@ -95,7 +100,14 @@ func (a *App) draw(w *app.Window) error {
 					a.Player.IsPlay = false
 				}
 			}
-
+			// RepeatButton
+			if a.repeatButton.Clicked() {
+				if a.repeat {
+					a.repeat = false
+				} else if !a.repeat {
+					a.repeat = true
+				}
+			}
 			// Prev music
 			if a.playPrevButton.Clicked() {
 				if a.idOfMusicInDir != 0 {
@@ -226,6 +238,18 @@ func (a *App) draw(w *app.Window) error {
 									return margins.Layout(gtx,
 										func(gtx layout.Context) layout.Dimensions {
 											playPBtn := material.Button(a.th, &a.playCurrencyButton, "Play")
+											return playPBtn.Layout(gtx)
+										},
+									)
+								},
+							),
+							// Repeat btn
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
+									return margins.Layout(gtx,
+										func(gtx layout.Context) layout.Dimensions {
+											playPBtn := material.Button(a.th, &a.repeatButton, "Repeat")
 											return playPBtn.Layout(gtx)
 										},
 									)
