@@ -17,6 +17,7 @@ import (
 )
 
 type App struct {
+	// App
 	th  *material.Theme
 	ops op.Ops
 	w   *app.Window
@@ -25,14 +26,14 @@ type App struct {
 	playPrevButton     widget.Clickable
 	playCurrencyButton widget.Clickable
 	playNextButton     widget.Clickable
-	sliderLenOfMusic   *widget.Float
+	sliderLenOfMusic   widget.Float
 
 	// Params of music
 	idOfMusicInDir int
 	lenOfMusic     float32
 
 	// Player
-	Player      music.Music
+	Player      *music.Music
 	pathOfMusic string
 }
 
@@ -73,7 +74,7 @@ func (a *App) draw(w *app.Window) error {
 	}
 
 	// Themes
-	th := material.NewTheme()
+	a.th = material.NewTheme()
 
 	// Started music
 	lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
@@ -82,22 +83,33 @@ func (a *App) draw(w *app.Window) error {
 	// listen for events in the window.
 	for e := range w.Events() {
 		switch e := e.(type) {
-
 		case system.FrameEvent:
+			if a.sliderLenOfMusic.Changed() {
+				a.Player.StopPlayMusic()
+				a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
+			}
+
+			// Prev music
 			if a.playPrevButton.Clicked() {
 				if a.idOfMusicInDir != 0 {
 					a.idOfMusicInDir -= 1
 					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
 					a.lenOfMusic = float32(lenMus)
 					a.sliderLenOfMusic.Value = 0
+					a.Player.StopPlayMusic()
+					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
 				}
 			}
+
+			// Next music
 			if a.playNextButton.Clicked() {
 				if a.idOfMusicInDir != len(musicArray)-1 {
 					a.idOfMusicInDir += 1
 					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
 					a.lenOfMusic = float32(lenMus)
 					a.sliderLenOfMusic.Value = 0
+					a.Player.StopPlayMusic()
+					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
 				}
 			}
 			if a.playCurrencyButton.Clicked() {
@@ -110,9 +122,9 @@ func (a *App) draw(w *app.Window) error {
 
 					a.Player.IsPlay = true
 
-					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), a.sliderLenOfMusic)
 				}
 			}
+
 			gtx := layout.NewContext(&a.ops, e)
 			// Events
 
@@ -131,10 +143,10 @@ func (a *App) draw(w *app.Window) error {
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
 									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
-										layout.Flexed(1, material.Slider(th, a.sliderLenOfMusic, 0, a.lenOfMusic).Layout),
+										layout.Flexed(1, material.Slider(a.th, &a.sliderLenOfMusic, 0, a.lenOfMusic).Layout),
 										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 											return layout.UniformInset(unit.Dp(18)).Layout(gtx,
-												material.Body1(th, fmt.Sprintf("%.0f", a.sliderLenOfMusic.Value)).Layout,
+												material.Body1(a.th, fmt.Sprintf("%.0f", a.sliderLenOfMusic.Value)).Layout,
 											)
 										}),
 									)
@@ -156,7 +168,7 @@ func (a *App) draw(w *app.Window) error {
 									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
 									return margins.Layout(gtx,
 										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(th, &a.playPrevButton, "Prev")
+											playPBtn := material.Button(a.th, &a.playPrevButton, "Prev")
 											return playPBtn.Layout(gtx)
 										},
 									)
@@ -168,7 +180,7 @@ func (a *App) draw(w *app.Window) error {
 									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
 									return margins.Layout(gtx,
 										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(th, &a.playCurrencyButton, "Play")
+											playPBtn := material.Button(a.th, &a.playCurrencyButton, "Play")
 											return playPBtn.Layout(gtx)
 										},
 									)
@@ -180,7 +192,7 @@ func (a *App) draw(w *app.Window) error {
 									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
 									return margins.Layout(gtx,
 										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(th, &a.playNextButton, "Next")
+											playPBtn := material.Button(a.th, &a.playNextButton, "Next")
 											return playPBtn.Layout(gtx)
 										},
 									)
@@ -198,6 +210,7 @@ func (a *App) draw(w *app.Window) error {
 		case system.DestroyEvent:
 			return e.Err
 		}
+
 	}
 	return nil
 }
