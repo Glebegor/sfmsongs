@@ -48,7 +48,9 @@ func draw(w *app.Window) error {
 	// Play and Stop vars of the music
 	musicPlayer := music.NewPlayer()
 	musicPlayer.IsPlay = false
+
 	path := "C:/Users/glebe/Music/Music"
+
 	musicArray, err := files.GetMusicInFolder(path)
 	if err != nil {
 		fmt.Errorf(err.Error())
@@ -65,10 +67,14 @@ func draw(w *app.Window) error {
 
 		case system.FrameEvent:
 			if playPrevButton.Clicked() {
-				idOfMusicInDir -= 1
+				if idOfMusicInDir != 0 {
+					idOfMusicInDir -= 1
+				}
 			}
 			if playNextButton.Clicked() {
-				idOfMusicInDir += 1
+				if idOfMusicInDir != len(musicArray)-1 {
+					idOfMusicInDir += 1
+				}
 			}
 			if playCurrencyButton.Clicked() {
 
@@ -79,6 +85,8 @@ func draw(w *app.Window) error {
 				} else if !musicPlayer.IsPlay {
 
 					musicPlayer.IsPlay = true
+					lenMus, _ := musicPlayer.LengthOfMusic(musicArray[idOfMusicInDir])
+					fmt.Print(lenMus)
 					musicPlayer.StartPlayMusic(musicArray[idOfMusicInDir], int(float1.Value))
 				}
 			}
