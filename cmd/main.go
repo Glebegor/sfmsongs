@@ -25,10 +25,15 @@ type App struct {
 	playPrevButton     widget.Clickable
 	playCurrencyButton widget.Clickable
 	playNextButton     widget.Clickable
+	sliderLenOfMusic   *widget.Float
 
 	// Params of music
 	idOfMusicInDir int
 	lenOfMusic     float32
+
+	// Player
+	Player      music.Music
+	pathOfMusic string
 }
 
 func main() {
@@ -50,28 +55,28 @@ func main() {
 }
 
 func (a *App) draw(w *app.Window) error {
-	// Play buttons
-	var ()
-	float1 := new(widget.Float)
 	// Play and Stop vars of the music
-	musicPlayer := music.NewPlayer()
-	musicPlayer.IsPlay = false
+	a.Player = music.NewPlayer()
+	a.Player.IsPlay = false
 
-	path := "C:/Users/glebe/Music/Music"
+	a.pathOfMusic = "C:/Users/glebe/Music/Music"
 
-	musicArray, err := files.GetMusicInFolder(path)
+	// Getting all files in dir
+	musicArray, err := files.GetMusicInFolder(a.pathOfMusic)
 	if err != nil {
 		fmt.Errorf(err.Error())
 	}
 	if len(musicArray) != 0 {
 		a.idOfMusicInDir = 0
+	} else {
+		fmt.Errorf("Dont have mp3 files in folder")
 	}
 
 	// Themes
 	th := material.NewTheme()
 
 	// Started music
-	lenMus, _ := musicPlayer.LengthOfMusic(musicArray[a.idOfMusicInDir])
+	lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
 	a.lenOfMusic = float32(lenMus)
 
 	// listen for events in the window.
@@ -82,30 +87,30 @@ func (a *App) draw(w *app.Window) error {
 			if a.playPrevButton.Clicked() {
 				if a.idOfMusicInDir != 0 {
 					a.idOfMusicInDir -= 1
-					lenMus, _ := musicPlayer.LengthOfMusic(musicArray[a.idOfMusicInDir])
+					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
 					a.lenOfMusic = float32(lenMus)
-					float1.Value = 0
+					a.sliderLenOfMusic.Value = 0
 				}
 			}
 			if a.playNextButton.Clicked() {
 				if a.idOfMusicInDir != len(musicArray)-1 {
 					a.idOfMusicInDir += 1
-					lenMus, _ := musicPlayer.LengthOfMusic(musicArray[a.idOfMusicInDir])
+					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
 					a.lenOfMusic = float32(lenMus)
-					float1.Value = 0
+					a.sliderLenOfMusic.Value = 0
 				}
 			}
 			if a.playCurrencyButton.Clicked() {
 
-				if musicPlayer.IsPlay {
+				if a.Player.IsPlay {
 
-					musicPlayer.IsPlay = false
-					musicPlayer.PauseMusic()
-				} else if !musicPlayer.IsPlay {
+					a.Player.IsPlay = false
+					a.Player.PauseMusic()
+				} else if !a.Player.IsPlay {
 
-					musicPlayer.IsPlay = true
+					a.Player.IsPlay = true
 
-					musicPlayer.StartPlayMusic(musicArray[a.idOfMusicInDir], int(float1.Value), float1)
+					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), a.sliderLenOfMusic)
 				}
 			}
 			gtx := layout.NewContext(&a.ops, e)
@@ -126,10 +131,10 @@ func (a *App) draw(w *app.Window) error {
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
 									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
-										layout.Flexed(1, material.Slider(th, float1, 0, a.lenOfMusic).Layout),
+										layout.Flexed(1, material.Slider(th, a.sliderLenOfMusic, 0, a.lenOfMusic).Layout),
 										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 											return layout.UniformInset(unit.Dp(18)).Layout(gtx,
-												material.Body1(th, fmt.Sprintf("%.0f", float1.Value)).Layout,
+												material.Body1(th, fmt.Sprintf("%.0f", a.sliderLenOfMusic.Value)).Layout,
 											)
 										}),
 									)
