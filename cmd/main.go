@@ -18,19 +18,29 @@ import (
 
 type App struct {
 	th  *material.Theme
-	ops layout.Context
+	ops op.Ops
 	w   *app.Window
+
+	// Buttons
+	playPrevButton     widget.Clickable
+	playCurrencyButton widget.Clickable
+	playNextButton     widget.Clickable
+
+	// Params of music
+	idOfMusicInDir int
+	lenOfMusic     float32
 }
 
 func main() {
 	go func() {
-		// New window
 		App := new(App)
+		// New window
 		App.w = app.NewWindow(
 			app.Title("SFMSongs"),
 			app.Size(unit.Dp(400), unit.Dp(600)),
 		)
-		if err := draw(App.w); err != nil {
+		// Drawwing of window
+		if err := App.draw(App.w); err != nil {
 			log.Fatal(err)
 		}
 		// EXIT command
@@ -39,19 +49,9 @@ func main() {
 	app.Main()
 }
 
-func draw(w *app.Window) error {
-
-	// UI variable
-	var ops op.Ops
-
+func (a *App) draw(w *app.Window) error {
 	// Play buttons
-	var (
-		playPrevButton     widget.Clickable
-		playCurrencyButton widget.Clickable
-		playNextButton     widget.Clickable
-		idOfMusicInDir     int
-		lenOfMusic         float32
-	)
+	var ()
 	float1 := new(widget.Float)
 	// Play and Stop vars of the music
 	musicPlayer := music.NewPlayer()
@@ -64,38 +64,38 @@ func draw(w *app.Window) error {
 		fmt.Errorf(err.Error())
 	}
 	if len(musicArray) != 0 {
-		idOfMusicInDir = 0
+		a.idOfMusicInDir = 0
 	}
 
 	// Themes
 	th := material.NewTheme()
 
 	// Started music
-	lenMus, _ := musicPlayer.LengthOfMusic(musicArray[idOfMusicInDir])
-	lenOfMusic = float32(lenMus)
+	lenMus, _ := musicPlayer.LengthOfMusic(musicArray[a.idOfMusicInDir])
+	a.lenOfMusic = float32(lenMus)
 
 	// listen for events in the window.
 	for e := range w.Events() {
 		switch e := e.(type) {
 
 		case system.FrameEvent:
-			if playPrevButton.Clicked() {
-				if idOfMusicInDir != 0 {
-					idOfMusicInDir -= 1
-					lenMus, _ := musicPlayer.LengthOfMusic(musicArray[idOfMusicInDir])
-					lenOfMusic = float32(lenMus)
+			if a.playPrevButton.Clicked() {
+				if a.idOfMusicInDir != 0 {
+					a.idOfMusicInDir -= 1
+					lenMus, _ := musicPlayer.LengthOfMusic(musicArray[a.idOfMusicInDir])
+					a.lenOfMusic = float32(lenMus)
 					float1.Value = 0
 				}
 			}
-			if playNextButton.Clicked() {
-				if idOfMusicInDir != len(musicArray)-1 {
-					idOfMusicInDir += 1
-					lenMus, _ := musicPlayer.LengthOfMusic(musicArray[idOfMusicInDir])
-					lenOfMusic = float32(lenMus)
+			if a.playNextButton.Clicked() {
+				if a.idOfMusicInDir != len(musicArray)-1 {
+					a.idOfMusicInDir += 1
+					lenMus, _ := musicPlayer.LengthOfMusic(musicArray[a.idOfMusicInDir])
+					a.lenOfMusic = float32(lenMus)
 					float1.Value = 0
 				}
 			}
-			if playCurrencyButton.Clicked() {
+			if a.playCurrencyButton.Clicked() {
 
 				if musicPlayer.IsPlay {
 
@@ -105,10 +105,10 @@ func draw(w *app.Window) error {
 
 					musicPlayer.IsPlay = true
 
-					musicPlayer.StartPlayMusic(musicArray[idOfMusicInDir], int(float1.Value), float1)
+					musicPlayer.StartPlayMusic(musicArray[a.idOfMusicInDir], int(float1.Value), float1)
 				}
 			}
-			gtx := layout.NewContext(&ops, e)
+			gtx := layout.NewContext(&a.ops, e)
 			// Events
 
 			// Creating layout
@@ -126,7 +126,7 @@ func draw(w *app.Window) error {
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
 									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
-										layout.Flexed(1, material.Slider(th, float1, 0, lenOfMusic).Layout),
+										layout.Flexed(1, material.Slider(th, float1, 0, a.lenOfMusic).Layout),
 										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 											return layout.UniformInset(unit.Dp(18)).Layout(gtx,
 												material.Body1(th, fmt.Sprintf("%.0f", float1.Value)).Layout,
@@ -151,7 +151,7 @@ func draw(w *app.Window) error {
 									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
 									return margins.Layout(gtx,
 										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(th, &playPrevButton, "Prev")
+											playPBtn := material.Button(th, &a.playPrevButton, "Prev")
 											return playPBtn.Layout(gtx)
 										},
 									)
@@ -163,7 +163,7 @@ func draw(w *app.Window) error {
 									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
 									return margins.Layout(gtx,
 										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(th, &playCurrencyButton, "Play")
+											playPBtn := material.Button(th, &a.playCurrencyButton, "Play")
 											return playPBtn.Layout(gtx)
 										},
 									)
@@ -175,7 +175,7 @@ func draw(w *app.Window) error {
 									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
 									return margins.Layout(gtx,
 										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(th, &playNextButton, "Next")
+											playPBtn := material.Button(th, &a.playNextButton, "Next")
 											return playPBtn.Layout(gtx)
 										},
 									)
