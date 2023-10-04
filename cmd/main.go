@@ -86,6 +86,8 @@ func (a *App) draw(w *app.Window) error {
 		switch e := e.(type) {
 		case system.FrameEvent:
 			if a.sliderLenOfMusic.Changed() {
+				a.Player.IsPlay = true
+
 				a.Player.StopPlayMusic()
 				a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
 			}
@@ -93,6 +95,8 @@ func (a *App) draw(w *app.Window) error {
 			// Prev music
 			if a.playPrevButton.Clicked() {
 				if a.idOfMusicInDir != 0 {
+					a.Player.IsPlay = true
+
 					a.idOfMusicInDir -= 1
 					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
 					a.lenOfMusic = float32(lenMus)
@@ -106,6 +110,7 @@ func (a *App) draw(w *app.Window) error {
 			// Next music
 			if a.playNextButton.Clicked() {
 				if a.idOfMusicInDir != len(musicArray) {
+					a.Player.IsPlay = true
 					a.idOfMusicInDir += 1
 					fmt.Print(musicArray[a.idOfMusicInDir])
 					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
@@ -116,16 +121,19 @@ func (a *App) draw(w *app.Window) error {
 					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
 				}
 			}
+
 			if a.playCurrencyButton.Clicked() {
-
 				if a.Player.IsPlay {
-
 					a.Player.IsPlay = false
-					a.Player.PauseMusic()
+
+					a.Player.StopPlayMusic()
 				} else if !a.Player.IsPlay {
-
 					a.Player.IsPlay = true
+					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
+					a.lenOfMusic = float32(lenMus)
 
+					a.Player.StopPlayMusic()
+					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
 				}
 			}
 
@@ -137,6 +145,21 @@ func (a *App) draw(w *app.Window) error {
 				Axis:    layout.Vertical,
 				Spacing: layout.SpaceStart,
 			}.Layout(gtx,
+				layout.Rigid(
+					func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{
+							Axis:    layout.Horizontal,
+							Spacing: layout.Spacing(layout.Middle),
+						}.Layout(gtx,
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									text := a.Player.GetName(musicArray[a.idOfMusicInDir])
+									return material.Body1(a.th, text[:len(text)-4]).Layout(gtx)
+								},
+							),
+						)
+					},
+				),
 				// Slider to change start sec of music
 				layout.Rigid(
 					func(gtx layout.Context) layout.Dimensions {
