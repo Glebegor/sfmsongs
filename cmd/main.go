@@ -27,6 +27,7 @@ type App struct {
 	playCurrencyButton widget.Clickable
 	playNextButton     widget.Clickable
 	sliderLenOfMusic   widget.Float
+	optionsButton      widget.Clickable
 
 	// Params of music
 	idOfMusicInDir int
@@ -85,11 +86,14 @@ func (a *App) draw(w *app.Window) error {
 	for e := range w.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-			if a.sliderLenOfMusic.Changed() {
-				a.Player.IsPlay = true
-
-				a.Player.StopPlayMusic()
-				a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
+			if !a.sliderLenOfMusic.Dragging() && a.sliderLenOfMusic.Changed() {
+				if a.Player.IsPlay {
+					a.Player.StopPlayMusic()
+					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
+				}
+				if !a.Player.IsPlay {
+					a.Player.IsPlay = false
+				}
 			}
 
 			// Prev music
@@ -103,7 +107,7 @@ func (a *App) draw(w *app.Window) error {
 					a.sliderLenOfMusic.Value = 0
 
 					a.Player.StopPlayMusic()
-					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
+					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
 				}
 			}
 
@@ -118,7 +122,7 @@ func (a *App) draw(w *app.Window) error {
 					a.sliderLenOfMusic.Value = 0
 
 					a.Player.StopPlayMusic()
-					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
+					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
 				}
 			}
 
@@ -133,7 +137,7 @@ func (a *App) draw(w *app.Window) error {
 					a.lenOfMusic = float32(lenMus)
 
 					a.Player.StopPlayMusic()
-					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
+					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
 				}
 			}
 
@@ -143,8 +147,22 @@ func (a *App) draw(w *app.Window) error {
 			// Creating layout
 			layout.Flex{
 				Axis:    layout.Vertical,
-				Spacing: layout.SpaceStart,
+				Spacing: layout.SpaceBetween,
 			}.Layout(gtx,
+				layout.Rigid(
+					func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{
+							Axis: layout.Horizontal,
+						}.Layout(gtx,
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									optionsBtn := material.Button(a.th, &a.optionsButton, "Options")
+									return optionsBtn.Layout(gtx)
+								},
+							),
+						)
+					},
+				),
 				layout.Rigid(
 					func(gtx layout.Context) layout.Dimensions {
 						return layout.Flex{

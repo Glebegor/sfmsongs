@@ -44,7 +44,7 @@ func NewPlayer() *Music {
 }
 
 // Starting of play
-func (m *Music) StartPlayMusic(filePath string, sec int, float1 *widget.Float, w *app.Window) error {
+func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *widget.Float, w *app.Window) error {
 	m.SecondOfPlaying = 0
 	m.StopCh = make(chan struct{})
 
@@ -58,6 +58,10 @@ func (m *Music) StartPlayMusic(filePath string, sec int, float1 *widget.Float, w
 		ticker := time.NewTicker(1 * time.Second)
 		defer ticker.Stop()
 		for {
+			if m.SecondOfPlaying == secOfEnd {
+				close(m.StopCh)
+				return
+			}
 			select {
 			case <-ticker.C:
 				m.SecondOfPlaying++
