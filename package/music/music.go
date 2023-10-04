@@ -9,6 +9,7 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/widget"
+	"github.com/dhowden/tag"
 	"github.com/hajimehoshi/go-mp3"
 	"github.com/hajimehoshi/oto/v2"
 )
@@ -22,6 +23,15 @@ type Music struct {
 	StopCh          chan struct{} // Channel for signaling stop
 	PositionCh      chan time.Duration
 	SecondOfPlaying int
+}
+
+type PlayMusic struct {
+	timeInSec int
+	title     string
+	artist    string
+	album     string
+	genre     string
+	pic       string
 }
 
 // NewPlayer
@@ -154,4 +164,28 @@ func (m *Music) LengthOfMusic(filePath string) (int, error) {
 
 func (m *Music) GetSec() int {
 	return m.SecondOfPlaying
+}
+
+func (m *Music) GetInfoAboutSong(filePath string, lenSec int) (PlayMusic, error) {
+	var data PlayMusic
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return PlayMusic{}, err
+	}
+	defer file.Close()
+
+	// Read ID3 tags from the file
+	tag, err := tag.ReadFrom(file)
+	if err != nil {
+		return PlayMusic{}, err
+	}
+	// Access various tag information
+	data.title = tag.Title()
+	data.artist = tag.Artist()
+	data.album = tag.Album()
+	data.genre = tag.Genre()
+	data.pic = tag.Picture().Ext
+	data.timeInSec = lenSec
+	return data, nil
 }

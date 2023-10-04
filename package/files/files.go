@@ -1,6 +1,7 @@
 package files
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -20,6 +21,6 @@ func GetMusicInFolder(path string) ([]string, error) {
 			data = append(data, path+"/"+file.Name())
 		}
 	}
-
+	fmt.Print(data)
 	return data, nil
 }

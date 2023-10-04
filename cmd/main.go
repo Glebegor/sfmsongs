@@ -33,8 +33,9 @@ type App struct {
 	lenOfMusic     float32
 
 	// Player
-	Player      *music.Music
-	pathOfMusic string
+	Player           *music.Music
+	pathOfMusic      string
+	MusicThatPlaying music.PlayMusic
 }
 
 func main() {
@@ -96,6 +97,7 @@ func (a *App) draw(w *app.Window) error {
 					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
 					a.lenOfMusic = float32(lenMus)
 					a.sliderLenOfMusic.Value = 0
+
 					a.Player.StopPlayMusic()
 					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
 				}
@@ -103,11 +105,13 @@ func (a *App) draw(w *app.Window) error {
 
 			// Next music
 			if a.playNextButton.Clicked() {
-				if a.idOfMusicInDir != len(musicArray)-1 {
+				if a.idOfMusicInDir != len(musicArray) {
 					a.idOfMusicInDir += 1
+					fmt.Print(musicArray[a.idOfMusicInDir])
 					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
 					a.lenOfMusic = float32(lenMus)
 					a.sliderLenOfMusic.Value = 0
+
 					a.Player.StopPlayMusic()
 					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), &a.sliderLenOfMusic, a.w)
 				}
