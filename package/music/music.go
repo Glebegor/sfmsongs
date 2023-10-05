@@ -66,6 +66,12 @@ func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *w
 		for {
 			if m.SecondOfPlaying == secOfEnd {
 				close(m.StopCh)
+				if m.Repeat == true {
+					err := m.StartPlayMusic(filePath, 0, secOfEnd, float1, w)
+					if err != nil {
+						fmt.Printf("Error playing music: %v\n", err)
+					}
+				}
 				return
 			}
 			select {
