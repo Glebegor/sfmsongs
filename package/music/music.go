@@ -16,13 +16,19 @@ import (
 
 // truct to play music
 type Music struct {
-	IsPlay          bool
-	dec             *mp3.Decoder
-	player          oto.Player
-	paused          bool
-	StopCh          chan struct{} // Channel for signaling stop
-	PositionCh      chan time.Duration
+	dec    *mp3.Decoder
+	player oto.Player
+
 	SecondOfPlaying int
+	// Channels
+	StopCh     chan struct{} // Channel for signaling stop
+	PositionCh chan time.Duration
+
+	// mods
+	Repeat       bool
+	PlayPlaylist bool
+	Paused       bool
+	IsPlay       bool
 }
 
 type PlayMusic struct {

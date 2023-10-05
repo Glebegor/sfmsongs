@@ -23,15 +23,15 @@ type App struct {
 	w   *app.Window
 
 	// Buttons
-	playPrevButton     widget.Clickable
-	playCurrencyButton widget.Clickable
-	playNextButton     widget.Clickable
-	sliderLenOfMusic   widget.Float
-	optionsButton      widget.Clickable
-	repeatButton       widget.Clickable
+	playPrevButton        widget.Clickable
+	playCurrencyButton    widget.Clickable
+	playNextButton        widget.Clickable
+	sliderLenOfMusic      widget.Float
+	optionsButton         widget.Clickable
+	repeatButton          widget.Clickable
+	playAllPlaylistButton widget.Clickable
 
 	// states of app
-	repeat bool
 
 	// Params of music
 	idOfMusicInDir int
@@ -78,7 +78,8 @@ func (a *App) draw(w *app.Window) error {
 	} else {
 		fmt.Errorf("Dont have mp3 files in folder")
 	}
-	a.repeat = false
+	a.Player.Repeat = false
+	a.Player.PlayPlaylist = false
 	// Themes
 	a.th = material.NewTheme()
 
@@ -102,10 +103,18 @@ func (a *App) draw(w *app.Window) error {
 			}
 			// RepeatButton
 			if a.repeatButton.Clicked() {
-				if a.repeat {
-					a.repeat = false
-				} else if !a.repeat {
-					a.repeat = true
+				if a.Player.Repeat {
+					a.Player.Repeat = false
+				} else if !a.Player.Repeat {
+					a.Player.Repeat = true
+				}
+			}
+			// PlayListButton
+			if a.repeatButton.Clicked() {
+				if a.Player.PlayPlaylist {
+					a.Player.PlayPlaylist = false
+				} else if !a.Player.PlayPlaylist {
+					a.Player.PlayPlaylist = true
 				}
 			}
 			// Prev music
@@ -154,8 +163,6 @@ func (a *App) draw(w *app.Window) error {
 			}
 
 			gtx := layout.NewContext(&a.ops, e)
-			// Events
-
 			// Creating layout
 			layout.Flex{
 				Axis:    layout.Vertical,
@@ -212,6 +219,39 @@ func (a *App) draw(w *app.Window) error {
 						)
 					},
 				),
+				layout.Rigid(
+					func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{
+							Axis:    layout.Horizontal,
+							Spacing: layout.Spacing(layout.Middle),
+						}.Layout(gtx,
+							// Repeat btn
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
+									return margins.Layout(gtx,
+										func(gtx layout.Context) layout.Dimensions {
+											playPBtn := material.Button(a.th, &a.repeatButton, "Repeat")
+											return playPBtn.Layout(gtx)
+										},
+									)
+								},
+							),
+							// All Playlist btn
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
+									return margins.Layout(gtx,
+										func(gtx layout.Context) layout.Dimensions {
+											playPBtn := material.Button(a.th, &a.playAllPlaylistButton, "Play Playlist")
+											return playPBtn.Layout(gtx)
+										},
+									)
+								},
+							),
+						)
+					},
+				),
 				// Buttons play next, play current, play prev
 				layout.Rigid(
 					func(gtx layout.Context) layout.Dimensions {
@@ -243,18 +283,7 @@ func (a *App) draw(w *app.Window) error {
 									)
 								},
 							),
-							// Repeat btn
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
-									return margins.Layout(gtx,
-										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(a.th, &a.repeatButton, "Repeat")
-											return playPBtn.Layout(gtx)
-										},
-									)
-								},
-							),
+
 							// Next btn
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
