@@ -76,6 +76,7 @@ func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *w
 				return
 			}
 		}
+
 	}()
 	return nil
 }
@@ -106,8 +107,8 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 		panic("Oto read failed: " + err.Error())
 	}
 
+	// Sending signal to the thread
 	<-readyChan
-
 	// Playing of music by second of start
 	m.player = otoCtx.NewPlayer(m.dec)
 	newPos, err := m.player.(io.Seeker).Seek(int64(sec)*int64(sapmlingRate)*4, io.SeekStart)
@@ -116,31 +117,13 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 	}
 	println("Player is now at position:", newPos)
 	m.player.Play()
+
 	// We can wait for the sound to finish playing using something like this
 	for m.player.IsPlaying() {
 		fmt.Print(m.player.IsPlaying())
 		time.Sleep(time.Millisecond)
 	}
-	if m.Repeat == true {
-		err := m.StartPlayMusic(filePath, 0, secOfEnd, float1, w)
-		if err != nil {
-			fmt.Printf("Error playing music: %v\n", err)
-		}
-	}
 	return nil
-}
-
-// Pausing of music
-func (m *Music) PauseMusic() {
-	fmt.Print("\nMusic paused\n")
-	// m.player.Pause()
-	// if m.paused == false {
-	// 	m.paused = true
-	// 	m.player.Pause()
-	// } else {
-	// 	m.player.Reset()
-	// }
-
 }
 
 // Stopping of music
@@ -190,6 +173,8 @@ func (m *Music) LengthOfMusic(filePath string) (int, error) {
 func (m *Music) GetSec() int {
 	return m.SecondOfPlaying
 }
+
+// Getting name of file
 func (m *Music) GetName(filePath string) string {
 	return filepath.Base(filePath)
 }
