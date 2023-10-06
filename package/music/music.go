@@ -66,7 +66,6 @@ func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *w
 		for {
 			if m.SecondOfPlaying == secOfEnd {
 				close(m.StopCh)
-				return
 			}
 			select {
 			case <-ticker.C:
@@ -122,13 +121,12 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 		fmt.Print(m.player.IsPlaying())
 		time.Sleep(time.Millisecond)
 	}
-	if m.Repeat == true && !m.player.IsPlaying() {
+	if m.Repeat == true {
 		err := m.StartPlayMusic(filePath, 0, secOfEnd, float1, w)
 		if err != nil {
 			fmt.Printf("Error playing music: %v\n", err)
 		}
 	}
-
 	return nil
 }
 
