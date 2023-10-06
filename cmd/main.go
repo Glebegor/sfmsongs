@@ -120,30 +120,42 @@ func (a *App) draw(w *app.Window) error {
 			// Prev music
 			if a.playPrevButton.Clicked() {
 				if a.idOfMusicInDir != 0 {
-					a.Player.IsPlay = true
+					if a.Player.IsPlay == false {
+						a.idOfMusicInDir -= 1
+						fmt.Print(musicArray[a.idOfMusicInDir])
+						lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
+						a.lenOfMusic = float32(lenMus)
+						a.sliderLenOfMusic.Value = 0
+					} else if a.Player.IsPlay == true {
+						a.idOfMusicInDir -= 1
+						lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
+						a.lenOfMusic = float32(lenMus)
+						a.sliderLenOfMusic.Value = 0
 
-					a.idOfMusicInDir -= 1
-					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
-					a.lenOfMusic = float32(lenMus)
-					a.sliderLenOfMusic.Value = 0
-
-					a.Player.StopPlayMusic()
-					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
+						a.Player.StopPlayMusic()
+						a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
+					}
 				}
 			}
 
 			// Next music
 			if a.playNextButton.Clicked() {
 				if a.idOfMusicInDir != len(musicArray) {
-					a.Player.IsPlay = true
-					a.idOfMusicInDir += 1
-					fmt.Print(musicArray[a.idOfMusicInDir])
-					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
-					a.lenOfMusic = float32(lenMus)
-					a.sliderLenOfMusic.Value = 0
-
-					a.Player.StopPlayMusic()
-					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
+					if a.Player.IsPlay == false {
+						a.idOfMusicInDir += 1
+						fmt.Print(musicArray[a.idOfMusicInDir])
+						lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
+						a.lenOfMusic = float32(lenMus)
+						a.sliderLenOfMusic.Value = 0
+					} else if a.Player.IsPlay == true {
+						a.idOfMusicInDir += 1
+						fmt.Print(musicArray[a.idOfMusicInDir])
+						lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
+						a.lenOfMusic = float32(lenMus)
+						a.sliderLenOfMusic.Value = 0
+						a.Player.StopPlayMusic()
+						a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
+					}
 				}
 			}
 

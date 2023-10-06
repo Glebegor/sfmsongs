@@ -55,7 +55,7 @@ func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *w
 	m.StopCh = make(chan struct{})
 
 	go func() {
-		err := m.PlayMusic(filePath, sec)
+		err := m.PlayMusic(filePath, sec, secOfEnd, float1, w)
 		if err != nil {
 			fmt.Printf("Error playing music: %v\n", err)
 		}
@@ -66,12 +66,6 @@ func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *w
 		for {
 			if m.SecondOfPlaying == secOfEnd {
 				close(m.StopCh)
-				if m.Repeat == true {
-					err := m.StartPlayMusic(filePath, 0, secOfEnd, float1, w)
-					if err != nil {
-						fmt.Printf("Error playing music: %v\n", err)
-					}
-				}
 				return
 			}
 			select {
@@ -88,7 +82,7 @@ func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *w
 }
 
 // Playing of music
-func (m *Music) PlayMusic(filePath string, sec int) error {
+func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget.Float, w *app.Window) error {
 	fmt.Print("\nMusic playing\n")
 	m.SecondOfPlaying = sec
 
@@ -125,7 +119,14 @@ func (m *Music) PlayMusic(filePath string, sec int) error {
 	m.player.Play()
 	// We can wait for the sound to finish playing using something like this
 	for m.player.IsPlaying() {
+		fmt.Print(m.player.IsPlaying())
 		time.Sleep(time.Millisecond)
+	}
+	if m.Repeat == true && !m.player.IsPlaying() {
+		err := m.StartPlayMusic(filePath, 0, secOfEnd, float1, w)
+		if err != nil {
+			fmt.Printf("Error playing music: %v\n", err)
+		}
 	}
 
 	return nil
