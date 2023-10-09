@@ -52,31 +52,14 @@ func NewPlayer() *Music {
 // Starting of play
 func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *widget.Float, w *app.Window) error {
 	m.SecondOfPlaying = 0
-	m.StopCh = make(chan struct{})
+	m.StopPlayMusic()
 
+	m.StopCh = make(chan struct{})
 	go func() {
 		err := m.PlayMusic(filePath, sec, secOfEnd, float1, w)
 		if err != nil {
 			fmt.Printf("Error playing music: %v\n", err)
 		}
-	}()
-	go func() {
-		ticker := time.NewTicker(1 * time.Second)
-		defer ticker.Stop()
-		for {
-			if m.SecondOfPlaying == secOfEnd {
-				close(m.StopCh)
-			}
-			select {
-			case <-ticker.C:
-				m.SecondOfPlaying++
-				float1.Value = float32(m.SecondOfPlaying)
-				w.Invalidate()
-			case <-m.StopCh:
-				return
-			}
-		}
-
 	}()
 	return nil
 }
@@ -119,10 +102,31 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 	m.player.Play()
 
 	// We can wait for the sound to finish playing using something like this
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
 	for m.player.IsPlaying() {
-		fmt.Print(m.player.IsPlaying())
-		time.Sleep(time.Millisecond)
+		select {
+		case <-ticker.C:
+			m.SecondOfPlaying++
+			fmt.Println("Second of playing:", m.SecondOfPlaying)
+			float1.Value = float32(m.SecondOfPlaying)
+			w.Invalidate()
+			// Check if the specified end second is reached
+			if m.SecondOfPlaying == secOfEnd {
+				if m.Repeat == true {
+					m.StartPlayMusic(filePath, 0, secOfEnd, float1, w)
+				}
+				m.StopCh <- struct{}{} // Send stop signal
+			}
+		case <-m.StopCh:
+			fmt.Println("Stopping playback...")
+			return nil
+		}
+		// fmt.Print(m.player.IsPlaying())
+		// time.Sleep(time.Millisecond)
 	}
+	<-m.StopCh
 	return nil
 }
 
@@ -169,7 +173,9 @@ func (m *Music) LengthOfMusic(filePath string) (int, error) {
 
 	return int(audioLength), nil
 }
-
+func (m *Music) SetVolume(soundVol float64) {
+	m.player.SetVolume(float64(soundVol))
+}
 func (m *Music) GetSec() int {
 	return m.SecondOfPlaying
 }

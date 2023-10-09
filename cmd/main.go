@@ -27,6 +27,7 @@ type App struct {
 	playCurrencyButton    widget.Clickable
 	playNextButton        widget.Clickable
 	sliderLenOfMusic      widget.Float
+	sliderSoundVol        widget.Float
 	optionsButton         widget.Clickable
 	repeatButton          widget.Clickable
 	playAllPlaylistButton widget.Clickable
@@ -94,12 +95,16 @@ func (a *App) draw(w *app.Window) error {
 			// Play by second
 			if !a.sliderLenOfMusic.Dragging() && a.sliderLenOfMusic.Changed() {
 				if a.Player.IsPlay {
-					a.Player.StopPlayMusic()
 					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
 				}
 				if !a.Player.IsPlay {
 					a.Player.IsPlay = false
 				}
+			}
+			// Changing volume
+			if a.sliderSoundVol.Dragging() {
+				a.Player.SetVolume(float64(a.sliderSoundVol.Value))
+				fmt.Print("Changed volume")
 			}
 			// RepeatButton
 			if a.repeatButton.Clicked() {
@@ -132,7 +137,6 @@ func (a *App) draw(w *app.Window) error {
 						a.lenOfMusic = float32(lenMus)
 						a.sliderLenOfMusic.Value = 0
 
-						a.Player.StopPlayMusic()
 						a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
 					}
 				}
@@ -153,7 +157,7 @@ func (a *App) draw(w *app.Window) error {
 						lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
 						a.lenOfMusic = float32(lenMus)
 						a.sliderLenOfMusic.Value = 0
-						a.Player.StopPlayMusic()
+
 						a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
 					}
 				}
@@ -162,14 +166,12 @@ func (a *App) draw(w *app.Window) error {
 			if a.playCurrencyButton.Clicked() {
 				if a.Player.IsPlay {
 					a.Player.IsPlay = false
-
 					a.Player.StopPlayMusic()
 				} else if !a.Player.IsPlay {
 					a.Player.IsPlay = true
 					lenMus, _ := a.Player.LengthOfMusic(musicArray[a.idOfMusicInDir])
 					a.lenOfMusic = float32(lenMus)
 
-					a.Player.StopPlayMusic()
 					a.Player.StartPlayMusic(musicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, a.w)
 				}
 			}
@@ -209,6 +211,27 @@ func (a *App) draw(w *app.Window) error {
 						)
 					},
 				),
+				// Sec and maxSec
+				layout.Rigid(
+					func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{
+							Axis:    layout.Horizontal,
+							Spacing: layout.Spacing(layout.Middle),
+						}.Layout(gtx,
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
+										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+											return layout.UniformInset(unit.Dp(18)).Layout(gtx,
+												material.Body1(a.th, fmt.Sprintf("%.0f/%.0f", a.sliderLenOfMusic.Value, a.lenOfMusic)).Layout,
+											)
+										}),
+									)
+								},
+							),
+						)
+					},
+				),
 				// Slider to change start sec of music
 				layout.Rigid(
 					func(gtx layout.Context) layout.Dimensions {
@@ -219,13 +242,23 @@ func (a *App) draw(w *app.Window) error {
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
 									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
-										layout.Flexed(1, material.Slider(a.th, &a.sliderLenOfMusic, 0, a.lenOfMusic).Layout),
-										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-											return layout.UniformInset(unit.Dp(18)).Layout(gtx,
-												material.Body1(a.th, fmt.Sprintf("%.0f", a.sliderLenOfMusic.Value)).Layout,
-											)
-										}),
-									)
+										layout.Flexed(1, material.Slider(a.th, &a.sliderLenOfMusic, 0, a.lenOfMusic).Layout))
+								},
+							),
+						)
+					},
+				),
+				// Slider to change start sec of music
+				layout.Rigid(
+					func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{
+							Axis:    layout.Horizontal,
+							Spacing: layout.Spacing(layout.Middle),
+						}.Layout(gtx,
+							layout.Rigid(
+								func(gtx layout.Context) layout.Dimensions {
+									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
+										layout.Flexed(1, material.Slider(a.th, &a.sliderSoundVol, 0, 1).Layout))
 								},
 							),
 						)
