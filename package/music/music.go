@@ -20,6 +20,7 @@ type Music struct {
 	player oto.Player
 
 	SecondOfPlaying int
+	SoundVol        float64
 	// Channels
 	StopCh     chan struct{} // Channel for signaling stop
 	PositionCh chan time.Duration
@@ -68,7 +69,6 @@ func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *w
 func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget.Float, w *app.Window) error {
 	fmt.Print("\nMusic playing\n")
 	m.SecondOfPlaying = sec
-
 	filesBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		panic("Cant read my bytes file.")
@@ -94,6 +94,9 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 	<-readyChan
 	// Playing of music by second of start
 	m.player = otoCtx.NewPlayer(m.dec)
+
+	m.player.SetVolume(float64(m.SoundVol))
+
 	newPos, err := m.player.(io.Seeker).Seek(int64(sec)*int64(sapmlingRate)*4, io.SeekStart)
 	if err != nil {
 		panic("player.Seek failed: " + err.Error())

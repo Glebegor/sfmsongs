@@ -103,8 +103,8 @@ func (a *App) draw(w *app.Window) error {
 			}
 			// Changing volume
 			if a.sliderSoundVol.Dragging() {
+				a.Player.SoundVol = float64(a.sliderSoundVol.Value)
 				a.Player.SetVolume(float64(a.sliderSoundVol.Value))
-				fmt.Print("Changed volume")
 			}
 			// RepeatButton
 			if a.repeatButton.Clicked() {
