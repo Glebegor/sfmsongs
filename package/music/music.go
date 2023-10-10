@@ -17,7 +17,7 @@ import (
 // truct to play music
 type Music struct {
 	dec    *mp3.Decoder
-	player oto.Player
+	Player oto.Player
 
 	SecondOfPlaying int
 	SoundVol        float64
@@ -93,25 +93,26 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 	// Sending signal to the thread
 	<-readyChan
 	// Playing of music by second of start
-	m.player = otoCtx.NewPlayer(m.dec)
+	m.Player = otoCtx.NewPlayer(m.dec)
 
-	m.player.SetVolume(float64(m.SoundVol))
+	m.Player.SetVolume(float64(m.SoundVol))
 
-	newPos, err := m.player.(io.Seeker).Seek(int64(sec)*int64(sapmlingRate)*4, io.SeekStart)
+	newPos, err := m.Player.(io.Seeker).Seek(int64(sec)*int64(sapmlingRate)*4, io.SeekStart)
 	if err != nil {
 		panic("player.Seek failed: " + err.Error())
 	}
 	println("Player is now at position:", newPos)
-	m.player.Play()
+	m.Player.Play()
 
-	// We can wait for the sound to finish playing using something like this
+	// Creating timer to change seconds
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
 
-	for m.player.IsPlaying() {
+	// We can wait for the sound to finish playing using something like this
+	for m.Player.IsPlaying() {
 		select {
+
 		case <-ticker.C:
-			m.SecondOfPlaying++
 			fmt.Println("Second of playing:", m.SecondOfPlaying)
 			float1.Value = float32(m.SecondOfPlaying)
 			w.Invalidate()
@@ -122,6 +123,7 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 				}
 				m.StopCh <- struct{}{} // Send stop signal
 			}
+			m.SecondOfPlaying++
 		case <-m.StopCh:
 			fmt.Println("Stopping playback...")
 			return nil
@@ -135,8 +137,8 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 
 // Stopping of music
 func (m *Music) StopPlayMusic() {
-	if m.player != nil {
-		m.player.Close()
+	if m.Player != nil {
+		m.Player.Close()
 	}
 	if m.dec != nil {
 		m.dec = nil
@@ -177,7 +179,7 @@ func (m *Music) LengthOfMusic(filePath string) (int, error) {
 	return int(audioLength), nil
 }
 func (m *Music) SetVolume(soundVol float64) {
-	m.player.SetVolume(float64(soundVol))
+	m.Player.SetVolume(float64(soundVol))
 }
 func (m *Music) GetSec() int {
 	return m.SecondOfPlaying
