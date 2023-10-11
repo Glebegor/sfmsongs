@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"sfmsonds/package/files"
+	"sfmsonds/package/layouts"
 	"sfmsonds/package/music"
 
 	"gioui.org/app"
@@ -184,177 +185,180 @@ func (a *App) draw(w *app.Window) error {
 
 			gtx := layout.NewContext(&a.ops, e)
 			// Creating layout
-			layout.Flex{
-				Axis:    layout.Vertical,
-				Spacing: layout.SpaceBetween,
-			}.Layout(gtx,
-				layout.Rigid(
-					func(gtx layout.Context) layout.Dimensions {
-						return layout.Flex{
-							Axis: layout.Horizontal,
-						}.Layout(gtx,
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									optionsBtn := material.Button(a.th, &a.optionsButton, "Options")
-									return optionsBtn.Layout(gtx)
-								},
-							),
-						)
-					},
-				),
-				layout.Rigid(
-					func(gtx layout.Context) layout.Dimensions {
-						return layout.Flex{
-							Axis:    layout.Horizontal,
-							Spacing: layout.Spacing(layout.Middle),
-						}.Layout(gtx,
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									text := a.Player.GetName(musicArray[a.idOfMusicInDir])
-									return material.Body1(a.th, text[:len(text)-4]).Layout(gtx)
-								},
-							),
-						)
-					},
-				),
-				// Sec and maxSec
-				layout.Rigid(
-					func(gtx layout.Context) layout.Dimensions {
-						return layout.Flex{
-							Axis:    layout.Horizontal,
-							Spacing: layout.Spacing(layout.Middle),
-						}.Layout(gtx,
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
-										layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-											return layout.UniformInset(unit.Dp(18)).Layout(gtx,
-												material.Body1(a.th, fmt.Sprintf("%.0f/%.0f", a.sliderLenOfMusic.Value, a.lenOfMusic)).Layout,
-											)
-										}),
-									)
-								},
-							),
-						)
-					},
-				),
-				// Slider to change start sec of music
-				layout.Rigid(
-					func(gtx layout.Context) layout.Dimensions {
-						return layout.Flex{
-							Axis:    layout.Horizontal,
-							Spacing: layout.Spacing(layout.Middle),
-						}.Layout(gtx,
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
-										layout.Flexed(1, material.Slider(a.th, &a.sliderLenOfMusic, 0, a.lenOfMusic).Layout))
-								},
-							),
-						)
-					},
-				),
-				// Slider to change start sec of music
-				layout.Rigid(
-					func(gtx layout.Context) layout.Dimensions {
-						return layout.Flex{
-							Axis:    layout.Horizontal,
-							Spacing: layout.Spacing(layout.Middle),
-						}.Layout(gtx,
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
-										layout.Flexed(1, material.Slider(a.th, &a.sliderSoundVol, 0, 1).Layout))
-								},
-							),
-						)
-					},
-				),
-				layout.Rigid(
-					func(gtx layout.Context) layout.Dimensions {
-						return layout.Flex{
-							Axis:    layout.Horizontal,
-							Spacing: layout.Spacing(layout.Middle),
-						}.Layout(gtx,
-							// Repeat btn
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
-									return margins.Layout(gtx,
-										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(a.th, &a.repeatButton, "Repeat")
-											return playPBtn.Layout(gtx)
-										},
-									)
-								},
-							),
-							// All Playlist btn
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
-									return margins.Layout(gtx,
-										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(a.th, &a.playAllPlaylistButton, "Play Playlist")
-											return playPBtn.Layout(gtx)
-										},
-									)
-								},
-							),
-						)
-					},
-				),
-				// Buttons play next, play current, play prev
-				layout.Rigid(
-					func(gtx layout.Context) layout.Dimensions {
-						return layout.Flex{
-							Axis:    layout.Horizontal,
-							Spacing: layout.Spacing(layout.Middle),
-						}.Layout(gtx,
-							// Prev btn
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
-									return margins.Layout(gtx,
-										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(a.th, &a.playPrevButton, "Prev")
-											return playPBtn.Layout(gtx)
-										},
-									)
-								},
-							),
-							// Play btn
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
-									return margins.Layout(gtx,
-										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(a.th, &a.playCurrencyButton, "Play")
-											return playPBtn.Layout(gtx)
-										},
-									)
-								},
-							),
+			optionLayer := new(layouts.OptionsLayout)
+			optionLayer.Layout(gtx, a.th)
+			// layout.Flex{
+			// 	Axis:    layout.Vertical,
+			// 	Spacing: layout.SpaceBetween,
+			// }.Layout(gtx,
+			// 	layout.Rigid(
+			// 		func(gtx layout.Context) layout.Dimensions {
+			// 			return layout.Flex{
+			// 				Axis: layout.Horizontal,
+			// 			}.Layout(gtx,
+			// 				layout.Rigid(
+			// 					func(gtx layout.Context) layout.Dimensions {
+			// 						optionsBtn := material.Button(a.th, &a.optionsButton, "Options")
+			// 						return optionsBtn.Layout(gtx)
+			// 					},
+			// 				),
+			// 			)
+			// 		},
+			// 	),
+			// 	layout.Rigid(
+			// 		func(gtx layout.Context) layout.Dimensions {
+			// 			return layout.Flex{
+			// 				Axis:    layout.Horizontal,
+			// 				Spacing: layout.Spacing(layout.Middle),
+			// 			}.Layout(gtx,
+			// 				layout.Rigid(
+			// 					func(gtx layout.Context) layout.Dimensions {
+			// 						text := a.Player.GetName(musicArray[a.idOfMusicInDir])
+			// 						return material.Body1(a.th, text[:len(text)-4]).Layout(gtx)
+			// 					},
+			// 				),
+			// 			)
+			// 		},
+			// 	),
+			// 	// Sec and maxSec
+			// 	layout.Rigid(
+			// 		func(gtx layout.Context) layout.Dimensions {
+			// 			return layout.Flex{
+			// 				Axis:    layout.Horizontal,
+			// 				Spacing: layout.Spacing(layout.Middle),
+			// 			}.Layout(gtx,
+			// 				layout.Rigid(
+			// 					func(gtx layout.Context) layout.Dimensions {
+			// 						return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
+			// 							layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+			// 								return layout.UniformInset(unit.Dp(18)).Layout(gtx,
+			// 									material.Body1(a.th, fmt.Sprintf("%.0f/%.0f", a.sliderLenOfMusic.Value, a.lenOfMusic)).Layout,
+			// 								)
+			// 							}),
+			// 						)
+			// 					},
+			// 				),
+			// 			)
+			// 		},
+			// 	),
+			// 	// Slider to change start sec of music
+			// 	layout.Rigid(
+			// 		func(gtx layout.Context) layout.Dimensions {
+			// 			return layout.Flex{
+			// 				Axis:    layout.Horizontal,
+			// 				Spacing: layout.Spacing(layout.Middle),
+			// 			}.Layout(gtx,
+			// 				layout.Rigid(
+			// 					func(gtx layout.Context) layout.Dimensions {
+			// 						return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
+			// 							layout.Flexed(1, material.Slider(a.th, &a.sliderLenOfMusic, 0, a.lenOfMusic).Layout))
+			// 					},
+			// 				),
+			// 			)
+			// 		},
+			// 	),
+			// 	// Slider to change start sec of music
+			// 	layout.Rigid(
+			// 		func(gtx layout.Context) layout.Dimensions {
+			// 			return layout.Flex{
+			// 				Axis:    layout.Horizontal,
+			// 				Spacing: layout.Spacing(layout.Middle),
+			// 			}.Layout(gtx,
+			// 				layout.Rigid(
+			// 					func(gtx layout.Context) layout.Dimensions {
+			// 						return layout.Flex{Alignment: layout.Middle}.Layout(gtx,
+			// 							layout.Flexed(1, material.Slider(a.th, &a.sliderSoundVol, 0, 1).Layout))
+			// 					},
+			// 				),
+			// 			)
+			// 		},
+			// 	),
+			// 	layout.Rigid(
+			// 		func(gtx layout.Context) layout.Dimensions {
+			// 			return layout.Flex{
+			// 				Axis:    layout.Horizontal,
+			// 				Spacing: layout.Spacing(layout.Middle),
+			// 			}.Layout(gtx,
+			// 				// Repeat btn
+			// 				layout.Rigid(
+			// 					func(gtx layout.Context) layout.Dimensions {
+			// 						margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
+			// 						return margins.Layout(gtx,
+			// 							func(gtx layout.Context) layout.Dimensions {
+			// 								playPBtn := material.Button(a.th, &a.repeatButton, "Repeat")
+			// 								return playPBtn.Layout(gtx)
+			// 							},
+			// 						)
+			// 					},
+			// 				),
+			// 				// All Playlist btn
+			// 				layout.Rigid(
+			// 					func(gtx layout.Context) layout.Dimensions {
+			// 						margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
+			// 						return margins.Layout(gtx,
+			// 							func(gtx layout.Context) layout.Dimensions {
+			// 								playPBtn := material.Button(a.th, &a.playAllPlaylistButton, "Play Playlist")
+			// 								return playPBtn.Layout(gtx)
+			// 							},
+			// 						)
+			// 					},
+			// 				),
+			// 			)
+			// 		},
+			// 	),
+			// 	// Buttons play next, play current, play prev
+			// 	layout.Rigid(
+			// 		func(gtx layout.Context) layout.Dimensions {
+			// 			return layout.Flex{
+			// 				Axis:    layout.Horizontal,
+			// 				Spacing: layout.Spacing(layout.Middle),
+			// 			}.Layout(gtx,
+			// 				// Prev btn
+			// 				layout.Rigid(
+			// 					func(gtx layout.Context) layout.Dimensions {
+			// 						margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
+			// 						return margins.Layout(gtx,
+			// 							func(gtx layout.Context) layout.Dimensions {
+			// 								playPBtn := material.Button(a.th, &a.playPrevButton, "Prev")
+			// 								return playPBtn.Layout(gtx)
+			// 							},
+			// 						)
+			// 					},
+			// 				),
+			// 				// Play btn
+			// 				layout.Rigid(
+			// 					func(gtx layout.Context) layout.Dimensions {
+			// 						margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
+			// 						return margins.Layout(gtx,
+			// 							func(gtx layout.Context) layout.Dimensions {
+			// 								playPBtn := material.Button(a.th, &a.playCurrencyButton, "Play")
+			// 								return playPBtn.Layout(gtx)
+			// 							},
+			// 						)
+			// 					},
+			// 				),
 
-							// Next btn
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
-									return margins.Layout(gtx,
-										func(gtx layout.Context) layout.Dimensions {
-											playPBtn := material.Button(a.th, &a.playNextButton, "Next")
-											return playPBtn.Layout(gtx)
-										},
-									)
-								},
-							),
-						)
-					},
-				), // End of buttons layout
-				// Spaces
-				layout.Rigid(
-					layout.Spacer{Height: unit.Dp(25)}.Layout,
-				), // End of spaces
-			)
+			// 				// Next btn
+			// 				layout.Rigid(
+			// 					func(gtx layout.Context) layout.Dimensions {
+			// 						margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
+			// 						return margins.Layout(gtx,
+			// 							func(gtx layout.Context) layout.Dimensions {
+			// 								playPBtn := material.Button(a.th, &a.playNextButton, "Next")
+			// 								return playPBtn.Layout(gtx)
+			// 							},
+			// 						)
+			// 					},
+			// 				),
+			// 			)
+			// 		},
+			// 	), // End of buttons layout
+			// 	// Spaces
+			// 	layout.Rigid(
+			// 		layout.Spacer{Height: unit.Dp(25)}.Layout,
+			// 	), // End of spaces
+			// )
+			// End
 			e.Frame(gtx.Ops)
 		case system.DestroyEvent:
 			return e.Err
