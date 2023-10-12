@@ -184,9 +184,12 @@ func (a *App) draw(w *app.Window) error {
 			}
 
 			gtx := layout.NewContext(&a.ops, e)
-			// Creating layout
-			optionLayer := new(layouts.OptionsLayout)
-			optionLayer.Layout(gtx, a.th)
+			// Creating layouts
+			optionLayer := layouts.NewOptionLayout(gtx, a.th)
+			songsLayer := layouts.NewSongsLayout(gtx, a.th)
+			// Showing layouts
+			mainLayer := new(layouts.MainLayout)
+			mainLayer.Layout(gtx, a.th, optionLayer.LayoutMain)
 			// layout.Flex{
 			// 	Axis:    layout.Vertical,
 			// 	Spacing: layout.SpaceBetween,
