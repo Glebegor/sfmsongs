@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"sfmsonds/package/layouts"
-	"sfmsonds/package/music"
 
 	"gioui.org/app"
 	"gioui.org/io/system"
@@ -33,13 +32,13 @@ type App struct {
 	// states of app
 
 	// Params of music
-	idOfMusicInDir int
-	lenOfMusic     float32
+	// idOfMusicInDir int
+	// lenOfMusic     float32
 
-	// Player
-	Player           *music.Music
-	pathOfMusic      string
-	MusicThatPlaying music.PlayMusic
+	// // Player
+	// Player           *music.Music
+	// pathOfMusic      string
+	// MusicThatPlaying music.PlayMusic
 }
 
 func main() {
@@ -61,6 +60,7 @@ func main() {
 }
 
 func (a *App) draw(w *app.Window) error {
+	a.th = material.NewTheme()
 	// listen for events in the window.
 	for e := range w.Events() {
 		switch e := e.(type) {
@@ -69,11 +69,13 @@ func (a *App) draw(w *app.Window) error {
 			gtx := layout.NewContext(&a.ops, e)
 			// Creating layouts
 			// optionLayer := layouts.NewOptionLayout(gtx, a.th)
+			// songsLayer := layouts.NewSongsLayout(gtx, a.th)
 			songsLayer := layouts.NewSongsLayout(gtx, a.th)
 			// Showing layouts
-			mainLayer := new(layouts.MainLayout)
+			// mainLayer := new(layouts.MainLayout)
 			// songsLayer.ListenEvents(w)
-			mainLayer.Layout(gtx, a.th, songsLayer.LayoutMain)
+			songsLayer.Init(gtx, a.th)
+			// mainLayer.Layout(gtx, a.th, songsLayer.Init(gtx, a.th))
 			e.Frame(gtx.Ops)
 		case system.DestroyEvent:
 			return e.Err
