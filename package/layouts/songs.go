@@ -5,6 +5,7 @@ import (
 	"sfmsonds/package/files"
 	"sfmsonds/package/music"
 
+	"gioui.org/app"
 	"gioui.org/layout"
 	"gioui.org/unit"
 	"gioui.org/widget"
@@ -33,97 +34,97 @@ type SongsLayout struct {
 	MusicArray       []string
 }
 
-// func (a *SongsLayout) ListenEvents(w *app.Window) {
-// 	if !a.sliderLenOfMusic.Dragging() && a.sliderLenOfMusic.Changed() {
-// 		if a.Player.IsPlay {
-// 			a.Player.StartPlayMusic(a.MusicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), int(a.lenOfMusic), &a.sliderLenOfMusic, w)
-// 		}
-// 		if !a.Player.IsPlay {
-// 			a.Player.IsPlay = false
-// 		}
-// 	}
-// 	// Changing volume
-// 	if a.sliderSoundVol.Dragging() {
-// 		if a.Player.Player != nil {
-// 			a.Player.SoundVol = float64(a.sliderSoundVol.Value)
-// 			a.Player.SetVolume(float64(a.sliderSoundVol.Value))
-// 		}
-// 	}
-// 	// RepeatButton
-// 	if a.repeatButton.Clicked() {
-// 		if a.Player.Repeat {
-// 			a.Player.Repeat = false
-// 		} else if !a.Player.Repeat {
-// 			a.Player.Repeat = true
-// 		}
-// 	}
-// 	// PlayListButton
-// 	if a.repeatButton.Clicked() {
-// 		if a.Player.PlayPlaylist {
-// 			a.Player.PlayPlaylist = false
-// 		} else if !a.Player.PlayPlaylist {
-// 			a.Player.PlayPlaylist = true
-// 		}
-// 	}
-// 	// Prev music
-// 	if a.playPrevButton.Clicked() {
-// 		if a.idOfMusicInDir != 0 {
-// 			if a.Player.IsPlay == false {
-// 				a.idOfMusicInDir -= 1
-// 				fmt.Print(a.MusicArray[a.idOfMusicInDir])
-// 				lenMus, _ := a.Player.LengthOfMusic(a.MusicArray[a.idOfMusicInDir])
-// 				a.lenOfMusic = float32(lenMus)
-// 				a.sliderLenOfMusic.Value = 0
+func (s *SongsLayout) ListenEvents(w *app.Window) {
+	if !s.sliderLenOfMusic.Dragging() && s.sliderLenOfMusic.Changed() {
+		if s.Player.IsPlay {
+			s.Player.StartPlayMusic(s.MusicArray[s.idOfMusicInDir], int(s.sliderLenOfMusic.Value), int(s.lenOfMusic), &s.sliderLenOfMusic, w)
+		}
+		if !s.Player.IsPlay {
+			s.Player.IsPlay = false
+		}
+	}
+	// Changing volume
+	if s.sliderSoundVol.Dragging() {
+		if s.Player.Player != nil {
+			s.Player.SoundVol = float64(s.sliderSoundVol.Value)
+			s.Player.SetVolume(float64(s.sliderSoundVol.Value))
+		}
+	}
+	// RepeatButton
+	if s.repeatButton.Clicked() {
+		if s.Player.Repeat {
+			s.Player.Repeat = false
+		} else if !s.Player.Repeat {
+			s.Player.Repeat = true
+		}
+	}
+	// PlayListButton
+	if s.repeatButton.Clicked() {
+		if s.Player.PlayPlaylist {
+			s.Player.PlayPlaylist = false
+		} else if !s.Player.PlayPlaylist {
+			s.Player.PlayPlaylist = true
+		}
+	}
+	// Prev music
+	if s.playPrevButton.Clicked() {
+		if s.idOfMusicInDir != 0 {
+			if s.Player.IsPlay == false {
+				s.idOfMusicInDir -= 1
+				fmt.Print(s.MusicArray[s.idOfMusicInDir])
+				lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
+				s.lenOfMusic = float32(lenMus)
+				s.sliderLenOfMusic.Value = 0
 
-// 			} else if a.Player.IsPlay == true {
-// 				a.idOfMusicInDir -= 1
-// 				lenMus, err := a.Player.LengthOfMusic(a.MusicArray[a.idOfMusicInDir])
-// 				if err != nil {
-// 					fmt.Errorf(err.Error())
-// 				}
-// 				a.lenOfMusic = float32(lenMus)
-// 				a.sliderLenOfMusic.Value = 0
+			} else if s.Player.IsPlay == true {
+				s.idOfMusicInDir -= 1
+				lenMus, err := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
+				if err != nil {
+					fmt.Errorf(err.Error())
+				}
+				s.lenOfMusic = float32(lenMus)
+				s.sliderLenOfMusic.Value = 0
 
-// 				a.Player.StartPlayMusic(a.MusicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), int(a.lenOfMusic), &a.sliderLenOfMusic, w)
-// 			}
-// 		}
-// 	}
+				s.Player.StartPlayMusic(s.MusicArray[s.idOfMusicInDir], int(s.sliderLenOfMusic.Value), int(s.lenOfMusic), &s.sliderLenOfMusic, w)
+			}
+		}
+	}
 
-// 	// Next music
-// 	if a.playNextButton.Clicked() {
-// 		if a.idOfMusicInDir != len(a.MusicArray) {
-// 			if a.Player.IsPlay == false {
-// 				a.idOfMusicInDir += 1
-// 				fmt.Print(a.MusicArray[a.idOfMusicInDir])
-// 				lenMus, _ := a.Player.LengthOfMusic(a.MusicArray[a.idOfMusicInDir])
-// 				a.lenOfMusic = float32(lenMus)
-// 				a.sliderLenOfMusic.Value = 0
-// 			} else if a.Player.IsPlay == true {
-// 				a.idOfMusicInDir += 1
-// 				fmt.Print(a.MusicArray[a.idOfMusicInDir])
-// 				lenMus, _ := a.Player.LengthOfMusic(a.MusicArray[a.idOfMusicInDir])
-// 				a.lenOfMusic = float32(lenMus)
-// 				a.sliderLenOfMusic.Value = 0
+	// Next music
+	if s.playNextButton.Clicked() {
+		if s.idOfMusicInDir != len(s.MusicArray) {
+			if s.Player.IsPlay == false {
+				s.idOfMusicInDir += 1
+				fmt.Print(s.MusicArray[s.idOfMusicInDir])
+				lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
+				s.lenOfMusic = float32(lenMus)
+				s.sliderLenOfMusic.Value = 0
+			} else if s.Player.IsPlay == true {
+				s.idOfMusicInDir += 1
+				fmt.Print(s.MusicArray[s.idOfMusicInDir])
+				lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
+				s.lenOfMusic = float32(lenMus)
+				s.sliderLenOfMusic.Value = 0
 
-// 				a.Player.StartPlayMusic(a.MusicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), int(a.lenOfMusic), &a.sliderLenOfMusic, w)
-// 			}
-// 		}
-// 	}
+				s.Player.StartPlayMusic(s.MusicArray[s.idOfMusicInDir], int(s.sliderLenOfMusic.Value), int(s.lenOfMusic), &s.sliderLenOfMusic, w)
+			}
+		}
+	}
 
-// 	if a.playCurrencyButton.Clicked() {
-// 		if a.Player.IsPlay {
-// 			a.Player.IsPlay = false
-// 			a.Player.StopPlayMusic()
-// 		} else if !a.Player.IsPlay {
-// 			a.Player.IsPlay = true
-// 			lenMus, _ := a.Player.LengthOfMusic(a.MusicArray[a.idOfMusicInDir])
-// 			a.lenOfMusic = float32(lenMus)
+	if s.playCurrencyButton.Clicked() {
+		if s.Player.IsPlay {
+			s.Player.IsPlay = false
+			s.Player.StopPlayMusic()
+		} else if !s.Player.IsPlay {
+			s.Player.IsPlay = true
+			lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
+			s.lenOfMusic = float32(lenMus)
 
-//				a.Player.StartPlayMusic(a.MusicArray[a.idOfMusicInDir], int(a.sliderLenOfMusic.Value), lenMus, &a.sliderLenOfMusic, w)
-//			}
-//		}
-//	}
-func NewSongsLayout(gtx layout.Context, th *material.Theme) *SongsLayout {
+			s.Player.StartPlayMusic(s.MusicArray[s.idOfMusicInDir], int(s.sliderLenOfMusic.Value), lenMus, &s.sliderLenOfMusic, w)
+		}
+	}
+}
+func NewSongsLayout() *SongsLayout {
 	// Buttons
 	var playPrevButton widget.Clickable
 	var playCurrencyButton widget.Clickable
@@ -182,20 +183,7 @@ func (s *SongsLayout) Init(gtx layout.Context, th *material.Theme) layout.Dimens
 		Axis:    layout.Vertical,
 		Spacing: layout.SpaceBetween,
 	}.Layout(gtx,
-		// layout.Rigid(
-		// 	func(gtx layout.Context) layout.Dimensions {
-		// 		return layout.Flex{
-		// 			Axis: layout.Horizontal,
-		// 		}.Layout(gtx,
-		// 			layout.Rigid(
-		// 				func(gtx layout.Context) layout.Dimensions {
-		// 					optionsBtn := material.Button(th, optionsButton, "Options")
-		// 					return optionsBtn.Layout(gtx)
-		// 				},
-		// 			),
-		// 		)
-		// 	},
-		// ),
+
 		layout.Rigid(
 			func(gtx layout.Context) layout.Dimensions {
 				return layout.Flex{

@@ -61,21 +61,28 @@ func main() {
 
 func (a *App) draw(w *app.Window) error {
 	a.th = material.NewTheme()
+
+	// Initialization of layers
+	mainLayer := new(layouts.MainLayout)
+	songsLayer := layouts.NewSongsLayout()
+	optionLayer := layouts.NewOptionLayout()
+	// songsLayer := layouts.NewSongsLayout(gtx, a.th)
+
 	// listen for events in the window.
 	for e := range w.Events() {
 		switch e := e.(type) {
 		case system.FrameEvent:
-
 			gtx := layout.NewContext(&a.ops, e)
-			// Creating layouts
-			// optionLayer := layouts.NewOptionLayout(gtx, a.th)
-			// songsLayer := layouts.NewSongsLayout(gtx, a.th)
-			songsLayer := layouts.NewSongsLayout(gtx, a.th)
+
+			songsLayer.ListenEvents(w)
+			mainLayer.ListenEvents(w)
+
 			// Showing layouts
-			// mainLayer := new(layouts.MainLayout)
-			// songsLayer.ListenEvents(w)
-			songsLayer.Init(gtx, a.th)
-			// mainLayer.Layout(gtx, a.th, songsLayer.Init(gtx, a.th))
+			if mainLayer.IsOptionTrue == false {
+				mainLayer.Layout(gtx, a.th, songsLayer.Init(gtx, a.th))
+			} else if mainLayer.IsOptionTrue == true {
+				mainLayer.Layout(gtx, a.th, optionLayer.Init(gtx, a.th))
+			}
 			e.Frame(gtx.Ops)
 		case system.DestroyEvent:
 			return e.Err
