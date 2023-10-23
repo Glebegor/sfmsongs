@@ -15,9 +15,10 @@ import (
 
 type App struct {
 	// App
-	th  *material.Theme
-	ops op.Ops
-	w   *app.Window
+	th              *material.Theme
+	ops             op.Ops
+	w               *app.Window
+	FolderWithMusic string
 
 	// Buttons
 	// playPrevButton        widget.Clickable
@@ -44,6 +45,7 @@ type App struct {
 func main() {
 	go func() {
 		App := new(App)
+		App.FolderWithMusic = "C:/Users/glebe/Music"
 		// New window
 		App.w = app.NewWindow(
 			app.Title("SFMSongs"),
@@ -62,10 +64,14 @@ func main() {
 func (a *App) draw(w *app.Window) error {
 	a.th = material.NewTheme()
 
-	// Initialization of layers
+	// Initialization of options
+	optionLayer := layouts.NewOptionLayout()
+	optionLayer.MainFolder = a.FolderWithMusic
+
+	// New main layout
 	mainLayer := new(layouts.MainLayout)
 	songsLayer := layouts.NewSongsLayout()
-	optionLayer := layouts.NewOptionLayout()
+
 	// songsLayer := layouts.NewSongsLayout(gtx, a.th)
 
 	// listen for events in the window.
@@ -76,10 +82,11 @@ func (a *App) draw(w *app.Window) error {
 
 			songsLayer.ListenEvents(w)
 			mainLayer.ListenEvents(w)
+			optionLayer.ListenEvents(w)
 
 			// Showing layouts
 			if mainLayer.IsOptionTrue == false {
-				mainLayer.Layout(gtx, a.th, songsLayer.Init(gtx, a.th))
+				mainLayer.Layout(gtx, a.th, songsLayer.Init(gtx, a.th, a.FolderWithMusic))
 			} else if mainLayer.IsOptionTrue == true {
 				mainLayer.Layout(gtx, a.th, optionLayer.Init(gtx, a.th))
 			}

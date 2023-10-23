@@ -24,7 +24,6 @@ func NewMainLayout() *MainLayout {
 func (m *MainLayout) ListenEvents(w *app.Window) {
 	if m.optionButton.Clicked() {
 		fmt.Print(m.IsOptionTrue)
-		// 	fmt.Print("YESSSSSSSSSSSSss")
 		m.IsOptionTrue = !m.IsOptionTrue
 	}
 }
