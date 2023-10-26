@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"sfmsonds/package/layouts"
@@ -19,7 +20,7 @@ type App struct {
 	ops             op.Ops
 	w               *app.Window
 	FolderWithMusic string
-
+	chosenLayer     string
 	// Buttons
 	// playPrevButton        widget.Clickable
 	// playCurrencyButton    widget.Clickable
@@ -62,17 +63,20 @@ func main() {
 }
 
 func (a *App) draw(w *app.Window) error {
+	a.chosenLayer = "songs"
 	a.th = material.NewTheme()
 
 	// Initialization of options
 	optionLayer := layouts.NewOptionLayout()
 	optionLayer.MainFolder = a.FolderWithMusic
 
-	// New main layout
+	// Another layouts
 	mainLayer := new(layouts.MainLayout)
 	songsLayer := layouts.NewSongsLayout()
-
-	// songsLayer := layouts.NewSongsLayout(gtx, a.th)
+	playListLayer := layouts.NewPlayListsLayout()
+	songListLayer := layouts.NewSongListLayout()
+	// playListsLayer := layouts.NewPlayListsLyout()
+	// songsListLayer := layouts.NewsongsListLayer()
 
 	// listen for events in the window.
 	for e := range w.Events() {
@@ -81,15 +85,24 @@ func (a *App) draw(w *app.Window) error {
 			gtx := layout.NewContext(&a.ops, e)
 
 			songsLayer.ListenEvents(w)
-			mainLayer.ListenEvents(w)
+			a.chosenLayer = mainLayer.ListenEvents(w, a.chosenLayer)
 			optionLayer.ListenEvents(w)
+			playListLayer.ListenEvents(w)
 
 			// Showing layouts
-			if mainLayer.IsOptionTrue == false {
-				mainLayer.Layout(gtx, a.th, songsLayer.Init(gtx, a.th, a.FolderWithMusic))
-			} else if mainLayer.IsOptionTrue == true {
+			switch a.chosenLayer {
+			case "songs":
+				mainLayer.Layout(gtx, a.th, songsLayer.Init(gtx, a.th))
+			case "options":
 				mainLayer.Layout(gtx, a.th, optionLayer.Init(gtx, a.th))
+			case "playList":
+				mainLayer.Layout(gtx, a.th, playListLayer.Init(gtx, a.th))
+			case "songList":
+				mainLayer.Layout(gtx, a.th, songListLayer.Init(gtx, a.th))
+			default:
+				fmt.Println(a.chosenLayer)
 			}
+
 			e.Frame(gtx.Ops)
 		case system.DestroyEvent:
 			return e.Err

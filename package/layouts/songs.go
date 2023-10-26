@@ -178,8 +178,7 @@ func NewSongsLayout() *SongsLayout {
 	return newLayout
 }
 
-func (s *SongsLayout) Init(gtx layout.Context, th *material.Theme, pathToMusic string) layout.Dimensions {
-	err := s.UpdatePath(pathToMusic)
+func (s *SongsLayout) Init(gtx layout.Context, th *material.Theme) layout.Dimensions {
 	return layout.Flex{
 		Axis:    layout.Vertical,
 		Spacing: layout.SpaceBetween,
@@ -338,14 +337,4 @@ func (s *SongsLayout) Init(gtx layout.Context, th *material.Theme, pathToMusic s
 			layout.Spacer{Height: unit.Dp(25)}.Layout,
 		), // End of spaces
 	)
-}
-
-func (s *SongsLayout) UpdatePath(pathToMusic string) {
-	s.pathOfMusic = pathToMusic
-	// Getting all files in dir
-	musicArray, err := files.GetMusicInFolder(pathToMusic)
-	if err != nil {
-		fmt.Errorf(err.Error())
-	}
-	s.MusicArray = musicArray
 }
