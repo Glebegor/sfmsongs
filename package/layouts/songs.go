@@ -331,7 +331,8 @@ func (s *SongsLayout) Init(gtx layout.Context, th *material.Theme) layout.Dimens
 					),
 				)
 			},
-		), // End of buttons layout
+		),
+		// End of buttons layout
 		// Spaces
 		layout.Rigid(
 			layout.Spacer{Height: unit.Dp(25)}.Layout,

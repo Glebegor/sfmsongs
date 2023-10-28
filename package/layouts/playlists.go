@@ -3,6 +3,7 @@ package layouts
 import (
 	"gioui.org/app"
 	"gioui.org/layout"
+	"gioui.org/unit"
 	"gioui.org/widget/material"
 )
 
@@ -44,6 +45,10 @@ func (o *PlayListsLayout) Init(gtx layout.Context, th *material.Theme) layout.Di
 				)
 			},
 		),
+		// Spaces
+		layout.Rigid(
+			layout.Spacer{Height: unit.Dp(25)}.Layout,
+		), // End of spaces
 	)
 }
 func NewPlayListsLayout() *PlayListsLayout {

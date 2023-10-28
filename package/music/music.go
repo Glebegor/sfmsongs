@@ -10,6 +10,7 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/widget"
+	"github.com/dhowden/tag"
 	"github.com/hajimehoshi/go-mp3"
 	"github.com/hajimehoshi/oto/v2"
 )
@@ -38,7 +39,11 @@ type PlayMusic struct {
 	artist    string
 	album     string
 	genre     string
-	pic       string
+	pic       *tag.Picture
+}
+
+func (p *PlayMusic) GetPicture() []byte {
+	return p.pic.Data
 }
 
 // NewPlayer
@@ -54,7 +59,18 @@ func NewPlayer() *Music {
 func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *widget.Float, w *app.Window) error {
 	m.SecondOfPlaying = 0
 	m.StopPlayMusic()
-
+	musicInfo, _ := m.GetInfoAboutSong(filePath, secOfEnd)
+	// println(musicInfo.album)
+	// println(musicInfo.artist)
+	// println(musicInfo.genre)
+	println(musicInfo.pic.Data)
+	println(musicInfo.pic.Description)
+	println(musicInfo.pic.Ext)
+	println(musicInfo.pic.MIMEType)
+	println(musicInfo.pic.Type)
+	println(musicInfo.pic.String())
+	// println(musicInfo.timeInSec)
+	// println(musicInfo.title)
 	m.StopCh = make(chan struct{})
 	go func() {
 		err := m.PlayMusic(filePath, sec, secOfEnd, float1, w)
@@ -190,26 +206,27 @@ func (m *Music) GetName(filePath string) string {
 	return filepath.Base(filePath)
 }
 
-// func (m *Music) GetInfoAboutSong(filePath string, lenSec int) (PlayMusic, error) {
-// 	var data PlayMusic
+func (m *Music) GetInfoAboutSong(filePath string, lenSec int) (PlayMusic, error) {
+	var data PlayMusic
 
-// 	file, err := os.Open(filePath)
-// 	if err != nil {
-// 		return PlayMusic{}, err
-// 	}
-// 	defer file.Close()
+	file, err := os.Open(filePath)
+	if err != nil {
+		return PlayMusic{}, err
+	}
+	defer file.Close()
 
-// 	// Read ID3 tags from the file
-// 	tag, err := tag.ReadFrom(file)
-// 	if err != nil {
-// 		return PlayMusic{}, err
-// 	}
-// 	// Access various tag information
-// 	data.title = tag.Title()
-// 	data.artist = tag.Artist()
-// 	data.album = tag.Album()
-// 	data.genre = tag.Genre()
-// 	data.pic = tag.Picture().Ext
-// 	data.timeInSec = lenSec
-// 	return data, nil
-// }
+	// Read ID3 tags from the file
+	tag, err := tag.ReadFrom(file)
+	if err != nil {
+		return PlayMusic{}, err
+	}
+
+	// Access various tag information
+	data.title = tag.Title()
+	data.artist = tag.Artist()
+	data.album = tag.Album()
+	data.genre = tag.Genre()
+	data.timeInSec = lenSec
+	data.pic = tag.Picture()
+	return data, nil
+}
