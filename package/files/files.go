@@ -1,12 +1,13 @@
 package files
 
 import (
+	"fmt"
+	"image"
 	"os"
 	"strings"
 )
 
 // Getting files in path
-
 func GetMusicInFolder(path string) ([]string, error) {
 	var data []string
 
@@ -23,5 +24,21 @@ func GetMusicInFolder(path string) ([]string, error) {
 			}
 		}
 	}
+	fmt.Println(data)
 	return data, nil
+}
+
+func LoadImage(path string) (image.Image, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return img, nil
 }

@@ -123,6 +123,7 @@ func (s *SongsLayout) ListenEvents(w *app.Window) {
 			s.Player.StartPlayMusic(s.MusicArray[s.idOfMusicInDir], int(s.sliderLenOfMusic.Value), lenMus, &s.sliderLenOfMusic, w)
 		}
 	}
+
 }
 func NewSongsLayout() *SongsLayout {
 	// Buttons
@@ -139,7 +140,7 @@ func NewSongsLayout() *SongsLayout {
 	Player := music.NewPlayer()
 	Player.IsPlay = false
 
-	pathOfMusic := "C:/Users/glebe/Music"
+	pathOfMusic := "C:/Users/glebe/Music/Music"
 
 	// Getting all files in dir
 	musicArray, err := files.GetMusicInFolder(pathOfMusic)
@@ -177,8 +178,26 @@ func NewSongsLayout() *SongsLayout {
 	}
 	return newLayout
 }
+func (s *SongsLayout) SetSoundsArrays(pathToMusic string) {
+	s.pathOfMusic = pathToMusic
 
+	// Getting all files in dir
+	musicArray, err := files.GetMusicInFolder(s.pathOfMusic)
+	if err != nil {
+		fmt.Errorf(err.Error())
+	}
+
+	if len(musicArray) != 0 {
+		s.idOfMusicInDir = 0
+	} else {
+		fmt.Errorf("Dont have mp3 files in folder")
+	}
+	s.Player.Repeat = false
+	s.Player.PlayPlaylist = false
+}
 func (s *SongsLayout) Init(gtx layout.Context, th *material.Theme) layout.Dimensions {
+	s.SetSoundsArrays(s.pathOfMusic)
+
 	return layout.Flex{
 		Axis:    layout.Vertical,
 		Spacing: layout.SpaceBetween,

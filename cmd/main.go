@@ -46,7 +46,6 @@ type App struct {
 func main() {
 	go func() {
 		App := new(App)
-		App.FolderWithMusic = "C:/Users/glebe/Music"
 		// New window
 		App.w = app.NewWindow(
 			app.Title("SFMSongs"),
@@ -86,7 +85,7 @@ func (a *App) draw(w *app.Window) error {
 
 			songsLayer.ListenEvents(w)
 			a.chosenLayer = mainLayer.ListenEvents(w, a.chosenLayer)
-			optionLayer.ListenEvents(w)
+			optionLayer.ListenEvents(songsLayer, w)
 			playListLayer.ListenEvents(w)
 
 			// Showing layouts

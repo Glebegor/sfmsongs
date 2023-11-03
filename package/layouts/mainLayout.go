@@ -57,6 +57,7 @@ func (o *MainLayout) Layout(gtx layout.Context, th *material.Theme, lay layout.D
 						func(gtx layout.Context) layout.Dimensions {
 							optionsBtn := material.Button(th, &o.optionButton, "Options")
 							return optionsBtn.Layout(gtx)
+							// return ui.CreateBtnImage(gtx,&o.optionButton, "media/options.png")
 						},
 					),
 				)

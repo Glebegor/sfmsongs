@@ -28,10 +28,11 @@ func NewOptionLayout() *OptionsLayout {
 //			// 	songsIsTrue = !songsIsTrue
 //		}
 //	}
-func (o *OptionsLayout) ListenEvents(w *app.Window) {
+func (o *OptionsLayout) ListenEvents(songsLayer *SongsLayout, w *app.Window) {
 	if o.musicFolderButton.Clicked() {
 		fmt.Print(o.musicFolderInput.Text())
 		o.MainFolder = o.musicFolderInput.Text()
+		songsLayer.pathOfMusic = o.MainFolder
 		w.Invalidate()
 	}
 }
@@ -83,9 +84,4 @@ func (o *OptionsLayout) Init(gtx layout.Context, th *material.Theme) layout.Dime
 			layout.Spacer{Height: unit.Dp(25)}.Layout,
 		), // End of spaces
 	)
-}
-func pickFolder(gtx layout.Context) (string, error) {
-	var stringToPath string
-	return stringToPath, nil
-	// return dlg(gtx)
 }
