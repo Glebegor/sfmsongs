@@ -92,14 +92,15 @@ func (s *SongsLayout) ListenEvents(w *app.Window) {
 
 	// Next music
 	if s.playNextButton.Clicked() {
+		fmt.Println(s.idOfMusicInDir)
 		if s.idOfMusicInDir != len(s.MusicArray) {
-			if s.Player.IsPlay == false {
+			if !s.Player.IsPlay {
 				s.idOfMusicInDir += 1
 				fmt.Print(s.MusicArray[s.idOfMusicInDir])
 				lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
 				s.lenOfMusic = float32(lenMus)
 				s.sliderLenOfMusic.Value = 0
-			} else if s.Player.IsPlay == true {
+			} else if s.Player.IsPlay {
 				s.idOfMusicInDir += 1
 				fmt.Print(s.MusicArray[s.idOfMusicInDir])
 				lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
@@ -182,16 +183,16 @@ func (s *SongsLayout) SetSoundsArrays(pathToMusic string) {
 	s.pathOfMusic = pathToMusic
 
 	// Getting all files in dir
-	musicArray, err := files.GetMusicInFolder(s.pathOfMusic)
+	MusicArray, err := files.GetMusicInFolder(s.pathOfMusic)
 	if err != nil {
 		fmt.Errorf(err.Error())
 	}
-
-	if len(musicArray) != 0 {
-		s.idOfMusicInDir = 0
-	} else {
-		fmt.Errorf("Dont have mp3 files in folder")
-	}
+	fmt.Print(MusicArray)
+	// if len(musicArray) != 0 {
+	// 	s.idOfMusicInDir = 0
+	// } else {
+	// 	fmt.Errorf("Dont have mp3 files in folder")
+	// }
 	s.Player.Repeat = false
 	s.Player.PlayPlaylist = false
 }
