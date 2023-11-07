@@ -64,18 +64,16 @@ func main() {
 func (a *App) draw(w *app.Window) error {
 	a.chosenLayer = "songs"
 	a.th = material.NewTheme()
-
+	a.FolderWithMusic = "C:/Users/glebe/Music/Music"
 	// Initialization of options
 	optionLayer := layouts.NewOptionLayout()
 	optionLayer.MainFolder = a.FolderWithMusic
 
 	// Another layouts
 	mainLayer := new(layouts.MainLayout)
-	songsLayer := layouts.NewSongsLayout()
+	songsLayer := layouts.NewSongsLayout(a.FolderWithMusic)
 	playListLayer := layouts.NewPlayListsLayout()
 	songListLayer := layouts.NewSongListLayout()
-	// playListsLayer := layouts.NewPlayListsLyout()
-	// songsListLayer := layouts.NewsongsListLayer()
 
 	// listen for events in the window.
 	for e := range w.Events() {
@@ -84,6 +82,7 @@ func (a *App) draw(w *app.Window) error {
 			gtx := layout.NewContext(&a.ops, e)
 
 			songsLayer.ListenEvents(w)
+
 			a.chosenLayer = mainLayer.ListenEvents(w, a.chosenLayer)
 			optionLayer.ListenEvents(songsLayer, w)
 			playListLayer.ListenEvents(w)

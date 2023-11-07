@@ -48,10 +48,17 @@ func (p *PlayMusic) GetPicture() []byte {
 
 // NewPlayer
 func NewPlayer() *Music {
+	// Play and Stop vars of the music
+	IsPlay := false
+	Repeat := false
+	PlayPlaylist := false
 	return &Music{
 		StopCh:          make(chan struct{}),
 		PositionCh:      make(chan time.Duration),
 		SecondOfPlaying: 0,
+		IsPlay:          IsPlay,
+		Repeat:          Repeat,
+		PlayPlaylist:    PlayPlaylist,
 	}
 }
 
@@ -59,16 +66,16 @@ func NewPlayer() *Music {
 func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *widget.Float, w *app.Window) error {
 	m.SecondOfPlaying = 0
 	m.StopPlayMusic()
-	musicInfo, _ := m.GetInfoAboutSong(filePath, secOfEnd)
+	// musicInfo, _ := m.GetInfoAboutSong(filePath, secOfEnd)
 	// println(musicInfo.album)
 	// println(musicInfo.artist)
 	// println(musicInfo.genre)
-	println(musicInfo.pic.Data)
-	println(musicInfo.pic.Description)
-	println(musicInfo.pic.Ext)
-	println(musicInfo.pic.MIMEType)
-	println(musicInfo.pic.Type)
-	println(musicInfo.pic.String())
+	// println(musicInfo.pic.Data)
+	// println(musicInfo.pic.Description)
+	// println(musicInfo.pic.Ext)
+	// println(musicInfo.pic.MIMEType)
+	// println(musicInfo.pic.Type)
+	// println(musicInfo.pic.String())
 	// println(musicInfo.timeInSec)
 	// println(musicInfo.title)
 	m.StopCh = make(chan struct{})
@@ -96,8 +103,6 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 	if err != nil {
 		panic("Error in decoder: " + err.Error())
 	}
-	fmt.Print("Decoder worked\n")
-
 	sapmlingRate := 44100
 	numOfChannels := 2
 	audioBitDepth := 2
@@ -129,7 +134,7 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 		select {
 
 		case <-ticker.C:
-			fmt.Println("Second of playing:", m.SecondOfPlaying)
+			fmt.Println("Second of playing: ", m.SecondOfPlaying)
 			float1.Value = float32(m.SecondOfPlaying)
 			w.Invalidate()
 			// Check if the specified end second is reached

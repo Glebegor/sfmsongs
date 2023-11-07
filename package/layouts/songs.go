@@ -59,19 +59,35 @@ func (s *SongsLayout) ListenEvents(w *app.Window) {
 		}
 	}
 	// PlayListButton
-	if s.repeatButton.Clicked() {
-		if s.Player.PlayPlaylist {
-			s.Player.PlayPlaylist = false
-		} else if !s.Player.PlayPlaylist {
-			s.Player.PlayPlaylist = true
+	// if s.repeatButton.Clicked() {
+	// 	if s.Player.PlayPlaylist {
+	// 		s.Player.PlayPlaylist = false
+	// 	} else if !s.Player.PlayPlaylist {
+	// 		s.Player.PlayPlaylist = true
+	// 	}
+	// }
+
+	// Play music
+	if s.playCurrencyButton.Clicked() {
+		if s.Player.IsPlay {
+			s.Player.IsPlay = false
+			s.Player.StopPlayMusic()
+		} else if !s.Player.IsPlay {
+			s.Player.IsPlay = true
+			println("OK1")
+			lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
+			s.lenOfMusic = float32(lenMus)
+			println(lenMus)
+			println(s.MusicArray[0])
+			s.Player.StartPlayMusic(s.MusicArray[s.idOfMusicInDir], int(s.sliderLenOfMusic.Value), lenMus, &s.sliderLenOfMusic, w)
 		}
 	}
+
 	// Prev music
 	if s.playPrevButton.Clicked() {
-		if s.idOfMusicInDir != 0 {
+		if s.idOfMusicInDir > 0 {
 			if s.Player.IsPlay == false {
 				s.idOfMusicInDir -= 1
-				fmt.Print(s.MusicArray[s.idOfMusicInDir])
 				lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
 				s.lenOfMusic = float32(lenMus)
 				s.sliderLenOfMusic.Value = 0
@@ -92,17 +108,19 @@ func (s *SongsLayout) ListenEvents(w *app.Window) {
 
 	// Next music
 	if s.playNextButton.Clicked() {
-		fmt.Println(s.idOfMusicInDir)
-		if s.idOfMusicInDir != len(s.MusicArray) {
+		if s.idOfMusicInDir < len(s.MusicArray)-1 {
 			if !s.Player.IsPlay {
 				s.idOfMusicInDir += 1
-				fmt.Print(s.MusicArray[s.idOfMusicInDir])
+				fmt.Println("THIS1", s.idOfMusicInDir)
+				fmt.Println("THIS2", s.MusicArray)
 				lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
 				s.lenOfMusic = float32(lenMus)
 				s.sliderLenOfMusic.Value = 0
 			} else if s.Player.IsPlay {
 				s.idOfMusicInDir += 1
-				fmt.Print(s.MusicArray[s.idOfMusicInDir])
+				fmt.Println("THIS1", s.idOfMusicInDir)
+				fmt.Println("THIS2", s.MusicArray)
+				// fmt.Print(s.MusicArray[s.idOfMusicInDir])
 				lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
 				s.lenOfMusic = float32(lenMus)
 				s.sliderLenOfMusic.Value = 0
@@ -112,21 +130,8 @@ func (s *SongsLayout) ListenEvents(w *app.Window) {
 		}
 	}
 
-	if s.playCurrencyButton.Clicked() {
-		if s.Player.IsPlay {
-			s.Player.IsPlay = false
-			s.Player.StopPlayMusic()
-		} else if !s.Player.IsPlay {
-			s.Player.IsPlay = true
-			lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
-			s.lenOfMusic = float32(lenMus)
-
-			s.Player.StartPlayMusic(s.MusicArray[s.idOfMusicInDir], int(s.sliderLenOfMusic.Value), lenMus, &s.sliderLenOfMusic, w)
-		}
-	}
-
 }
-func NewSongsLayout() *SongsLayout {
+func NewSongsLayout(pathOfMusic string) *SongsLayout {
 	// Buttons
 	var playPrevButton widget.Clickable
 	var playCurrencyButton widget.Clickable
@@ -137,31 +142,22 @@ func NewSongsLayout() *SongsLayout {
 	var repeatButton widget.Clickable
 	var playAllPlaylistButton widget.Clickable
 
-	// Play and Stop vars of the music
-	Player := music.NewPlayer()
-	Player.IsPlay = false
-
-	pathOfMusic := "C:/Users/glebe/Music/Music"
-
 	// Getting all files in dir
 	musicArray, err := files.GetMusicInFolder(pathOfMusic)
 	if err != nil {
 		fmt.Errorf(err.Error())
 	}
-
 	var idOfMusicInDir int
 	if len(musicArray) != 0 {
 		idOfMusicInDir = 0
 	} else {
 		fmt.Errorf("Dont have mp3 files in folder")
 	}
-	Player.Repeat = false
-	Player.PlayPlaylist = false
 
+	Player := music.NewPlayer()
 	// Started music
 	lenMus, _ := Player.LengthOfMusic(musicArray[idOfMusicInDir])
 	lenOfMusic := float32(lenMus)
-
 	newLayout := &SongsLayout{
 		playPrevButton:        playPrevButton,
 		playCurrencyButton:    playCurrencyButton,
@@ -187,12 +183,7 @@ func (s *SongsLayout) SetSoundsArrays(pathToMusic string) {
 	if err != nil {
 		fmt.Errorf(err.Error())
 	}
-	fmt.Print(MusicArray)
-	// if len(musicArray) != 0 {
-	// 	s.idOfMusicInDir = 0
-	// } else {
-	// 	fmt.Errorf("Dont have mp3 files in folder")
-	// }
+	s.MusicArray = MusicArray
 	s.Player.Repeat = false
 	s.Player.PlayPlaylist = false
 }

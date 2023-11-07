@@ -1,8 +1,6 @@
 package layouts
 
 import (
-	"fmt"
-
 	"gioui.org/app"
 	"gioui.org/layout"
 	"gioui.org/unit"
@@ -30,10 +28,7 @@ func NewOptionLayout() *OptionsLayout {
 //	}
 func (o *OptionsLayout) ListenEvents(songsLayer *SongsLayout, w *app.Window) {
 	if o.musicFolderButton.Clicked() {
-		fmt.Print(o.musicFolderInput.Text())
-		o.MainFolder = o.musicFolderInput.Text()
-		songsLayer.pathOfMusic = o.MainFolder
-		w.Invalidate()
+
 	}
 }
 func (o *OptionsLayout) Init(gtx layout.Context, th *material.Theme) layout.Dimensions {
