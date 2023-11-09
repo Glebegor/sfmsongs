@@ -28,8 +28,13 @@ func NewOptionLayout() *OptionsLayout {
 //	}
 func (o *OptionsLayout) ListenEvents(songsLayer *SongsLayout, w *app.Window) {
 	if o.musicFolderButton.Clicked() {
-
+		o.MainFolder = o.musicFolderInput.Text()
+		songsLayer.idOfMusicInDir = 0
+		songsLayer.sliderLenOfMusic.Value = 0
+		songsLayer.SetSoundsArrays(o.musicFolderInput.Text())
+		w.Invalidate()
 	}
+	w.Invalidate()
 }
 func (o *OptionsLayout) Init(gtx layout.Context, th *material.Theme) layout.Dimensions {
 	return layout.Flex{

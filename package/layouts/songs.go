@@ -120,7 +120,6 @@ func (s *SongsLayout) ListenEvents(w *app.Window) {
 				s.idOfMusicInDir += 1
 				fmt.Println("THIS1", s.idOfMusicInDir)
 				fmt.Println("THIS2", s.MusicArray)
-				// fmt.Print(s.MusicArray[s.idOfMusicInDir])
 				lenMus, _ := s.Player.LengthOfMusic(s.MusicArray[s.idOfMusicInDir])
 				s.lenOfMusic = float32(lenMus)
 				s.sliderLenOfMusic.Value = 0
@@ -176,6 +175,9 @@ func NewSongsLayout(pathOfMusic string) *SongsLayout {
 	return newLayout
 }
 func (s *SongsLayout) SetSoundsArrays(pathToMusic string) {
+	if pathToMusic != s.pathOfMusic {
+		s.Player.StopPlayMusic()
+	}
 	s.pathOfMusic = pathToMusic
 
 	// Getting all files in dir
