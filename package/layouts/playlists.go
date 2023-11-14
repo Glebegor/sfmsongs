@@ -39,7 +39,7 @@ func (o *PlayListsLayout) Init(gtx layout.Context, th *material.Theme) layout.Di
 					),
 					layout.Rigid(
 						func(gtx layout.Context) layout.Dimensions {
-							return material.H1(th, "Playlist").Layout(gtx)
+							return material.H1(th, "layer2").Layout(gtx)
 						},
 					),
 				)

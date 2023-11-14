@@ -96,7 +96,7 @@ func (a *App) draw(w *app.Window) error {
 			case "playList":
 				mainLayer.Layout(gtx, a.th, playListLayer.Init(gtx, a.th))
 			case "songList":
-				mainLayer.Layout(gtx, a.th, songListLayer.Init(gtx, a.th))
+				mainLayer.Layout(gtx, a.th, songListLayer.Init(gtx, a.th, songsLayer.MusicArray))
 			default:
 				fmt.Println(a.chosenLayer)
 			}
