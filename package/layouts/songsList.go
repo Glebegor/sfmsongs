@@ -85,11 +85,9 @@ func (item SongsListItem) Layout(th *material.Theme, gtx layout.Context) layout.
 				}.Layout(gtx,
 					func(gtx layout.Context) layout.Dimensions {
 						return layout.Flex{}.Layout(gtx,
-							layout.Rigid(
-								func(gtx layout.Context) layout.Dimensions {
-									return material.Label(th, unit.Sp(10), item.MusicPath).Layout(gtx)
-								},
-							),
+							layout.Flexed(0.6, func(gtx layout.Context) layout.Dimensions {
+								return material.Label(th, unit.Sp(10), item.MusicPath).Layout(gtx)
+							}),
 							layout.Rigid(
 								func(gtx layout.Context) layout.Dimensions {
 									return material.Label(th, unit.Sp(10), "02:33").Layout(gtx)
