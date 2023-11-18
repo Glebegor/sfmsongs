@@ -85,6 +85,7 @@ func (a *App) draw(w *app.Window) error {
 
 			a.chosenLayer = mainLayer.ListenEvents(w, a.chosenLayer)
 			optionLayer.ListenEvents(songsLayer, w)
+			songListLayer.ListenEvents(w, &a.chosenLayer, songsLayer)
 			playListLayer.ListenEvents(w)
 
 			// Showing layouts

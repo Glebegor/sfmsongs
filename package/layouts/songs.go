@@ -189,6 +189,20 @@ func (s *SongsLayout) SetSoundsArrays(pathToMusic string) {
 	s.Player.Repeat = false
 	s.Player.PlayPlaylist = false
 }
+
+func (s *SongsLayout) SetNewMusic(id int, musicPath string, w *app.Window) {
+	s.Player.StopPlayMusic()
+
+	s.idOfMusicInDir = id
+
+	lenOfMusic, err := s.Player.LengthOfMusic(musicPath)
+	if err != nil {
+		fmt.Errorf(err.Error())
+	}
+	s.lenOfMusic = float32(lenOfMusic)
+	s.sliderLenOfMusic.Value = 0
+	s.Player.StartPlayMusic(musicPath, 0, int(s.lenOfMusic), &s.sliderLenOfMusic, w)
+}
 func (s *SongsLayout) Init(gtx layout.Context, th *material.Theme) layout.Dimensions {
 	s.SetSoundsArrays(s.pathOfMusic)
 
