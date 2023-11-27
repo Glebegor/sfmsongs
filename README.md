@@ -120,3 +120,50 @@ make run
 	LenOfMusic  int
 }
 ```
+
+### How working Player?
+<b>Music</b>
+```
+{
+	dec    *mp3.Decoder // Decoder for music
+	Player oto.Player // Player struct
+
+	SecondOfPlaying int // Music starting play from this second
+	SoundVol        float64 // Sound volume
+	// Channels
+	StopCh     chan struct{} // Channel for signaling stop
+	PositionCh chan time.Duration // Position of th channel
+
+	// mods
+	Repeat       bool // Repeat checker
+	PlayPlaylist bool // Playlist checker
+	Paused       bool // Pause checker
+	IsPlay       bool // If that play checker
+}
+```
+
+<b>PlayMusic</b>
+```
+{
+	timeInSec int // Time in seconds
+	title     string 
+	artist    string
+	album     string
+	genre     string
+	pic       *tag.Picture
+}
+```
+
+#### Methods of structures
+```
+func (p *PlayMusic) GetPicture() []byte // Get picture of music
+func NewPlayer() *Music // Initialization of music structure
+func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *widget.Float, w *app.Window) error // Start of playing music
+func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget.Float, w *app.Window) error // Playing of music
+func (m *Music) StopPlayMusic() // Stop of playing music
+func (m *Music) LengthOfMusic(filePath string) (int, error) // Getting length of music in seconds
+func (m *Music) SetVolume(soundVol float64) // Setting volume 
+func (m *Music) GetSec() int // Getting second of playing right now
+func (m *Music) GetName(filePath string) string // Getting name of music
+func (m *Music) GetInfoAboutSong(filePath string, lenSec int) (PlayMusic, error) // Getting full information about music
+```
