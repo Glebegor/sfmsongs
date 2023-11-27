@@ -1,12 +1,23 @@
 # SFMSongs
 ## About project
 <p>SFMSongs(or Smart For Me Songs) application to listening your the lovest music.</p>
-<p>In this app I using framework gio on language Golang</p>
+<p>In this app using framework gio on language Golang.</p>
+<p>Project has 3 main packages, music, files, layouts.</p>
+<p>To switch layouts app using switch cases.</p>
 
-## Build application
-### Building to exe
-### Running
-
+## Work with application through makefile
+<b>Download dependencies</b>
+```
+make install-depends
+```
+<b>Build for windows</b>
+```
+make build-win
+```
+<b>Running</b>
+```
+make run
+```
 ## Architecture of application
 <b>App</b> 
 ```
@@ -92,8 +103,8 @@
 	SongsBTNS []widget.Clickable
 }
 ```
-
 ### Help structures
+
 <b>SongsListItem</b>
 ```
 {
@@ -104,4 +115,3 @@
 	LenOfMusic  int
 }
 ```
-## 
