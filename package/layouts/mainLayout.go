@@ -71,19 +71,13 @@ func (o *MainLayout) Layout(gtx layout.Context, th *material.Theme, lay layout.D
 				}.Layout(gtx,
 					layout.Rigid(
 						func(gtx layout.Context) layout.Dimensions {
-							optionsBtn := material.Button(th, &o.optionSongs, "Songs")
+							optionsBtn := material.Button(th, &o.optionSongs, "Song")
 							return optionsBtn.Layout(gtx)
 						},
 					),
 					layout.Rigid(
 						func(gtx layout.Context) layout.Dimensions {
-							optionsBtn := material.Button(th, &o.optionPlayLists, "Play Lists")
-							return optionsBtn.Layout(gtx)
-						},
-					),
-					layout.Rigid(
-						func(gtx layout.Context) layout.Dimensions {
-							optionsBtn := material.Button(th, &o.optionThisSong, "This Song")
+							optionsBtn := material.Button(th, &o.optionThisSong, "Songs")
 							return optionsBtn.Layout(gtx)
 						},
 					),

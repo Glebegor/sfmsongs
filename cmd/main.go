@@ -64,7 +64,8 @@ func main() {
 func (a *App) draw(w *app.Window) error {
 	a.chosenLayer = "songs"
 	a.th = material.NewTheme()
-	a.FolderWithMusic = "C:/Users/glebe/Music/Music"
+	a.FolderWithMusic = "C:/Users/glebe/Music"
+
 	// Initialization of options
 	optionLayer := layouts.NewOptionLayout()
 	optionLayer.MainFolder = a.FolderWithMusic
@@ -72,7 +73,6 @@ func (a *App) draw(w *app.Window) error {
 	// Another layouts
 	mainLayer := new(layouts.MainLayout)
 	songsLayer := layouts.NewSongsLayout(a.FolderWithMusic)
-	playListLayer := layouts.NewPlayListsLayout()
 	songListLayer := layouts.NewSongListLayout()
 
 	// listen for events in the window.
@@ -86,7 +86,6 @@ func (a *App) draw(w *app.Window) error {
 			a.chosenLayer = mainLayer.ListenEvents(w, a.chosenLayer)
 			optionLayer.ListenEvents(songsLayer, w)
 			songListLayer.ListenEvents(w, &a.chosenLayer, songsLayer)
-			playListLayer.ListenEvents(w)
 
 			// Showing layouts
 			switch a.chosenLayer {
@@ -94,8 +93,6 @@ func (a *App) draw(w *app.Window) error {
 				mainLayer.Layout(gtx, a.th, songsLayer.Init(gtx, a.th))
 			case "options":
 				mainLayer.Layout(gtx, a.th, optionLayer.Init(gtx, a.th))
-			case "playList":
-				mainLayer.Layout(gtx, a.th, playListLayer.Init(gtx, a.th))
 			case "songList":
 				mainLayer.Layout(gtx, a.th, songListLayer.Init(gtx, a.th, songsLayer.MusicArray))
 			default:
