@@ -19,13 +19,6 @@ func NewOptionLayout() *OptionsLayout {
 	return &OptionsLayout{}
 }
 
-//	func (o *OptionsLayout) ListenEvents(w *app.Window, songsIsTrue bool) {
-//		if o.OptionBtn.Clicked() {
-//			fmt.Print("EVENT")
-//			// 	fmt.Print("YESSSSSSSSSSSSss")
-//			// 	songsIsTrue = !songsIsTrue
-//		}
-//	}
 func (o *OptionsLayout) ListenEvents(songsLayer *SongsLayout, w *app.Window) {
 	if o.musicFolderButton.Clicked() {
 		o.MainFolder = o.musicFolderInput.Text()

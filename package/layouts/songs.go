@@ -58,14 +58,6 @@ func (s *SongsLayout) ListenEvents(w *app.Window) {
 			s.Player.Repeat = true
 		}
 	}
-	// PlayListButton
-	// if s.repeatButton.Clicked() {
-	// 	if s.Player.PlayPlaylist {
-	// 		s.Player.PlayPlaylist = false
-	// 	} else if !s.Player.PlayPlaylist {
-	// 		s.Player.PlayPlaylist = true
-	// 	}
-	// }
 
 	// Play music
 	if s.playCurrencyButton.Clicked() {
@@ -292,18 +284,6 @@ func (s *SongsLayout) Init(gtx layout.Context, th *material.Theme) layout.Dimens
 							return margins.Layout(gtx,
 								func(gtx layout.Context) layout.Dimensions {
 									playPBtn := material.Button(th, &s.repeatButton, "Repeat")
-									return playPBtn.Layout(gtx)
-								},
-							)
-						},
-					),
-					// All Playlist btn
-					layout.Rigid(
-						func(gtx layout.Context) layout.Dimensions {
-							margins := layout.Inset{Right: unit.Dp(10), Left: unit.Dp(10)}
-							return margins.Layout(gtx,
-								func(gtx layout.Context) layout.Dimensions {
-									playPBtn := material.Button(th, &s.playAllPlaylistButton, "Play Playlist")
 									return playPBtn.Layout(gtx)
 								},
 							)

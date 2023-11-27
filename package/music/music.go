@@ -66,18 +66,6 @@ func NewPlayer() *Music {
 func (m *Music) StartPlayMusic(filePath string, sec int, secOfEnd int, float1 *widget.Float, w *app.Window) error {
 	m.SecondOfPlaying = 0
 	m.StopPlayMusic()
-	// musicInfo, _ := m.GetInfoAboutSong(filePath, secOfEnd)
-	// println(musicInfo.album)
-	// println(musicInfo.artist)
-	// println(musicInfo.genre)
-	// println(musicInfo.pic.Data)
-	// println(musicInfo.pic.Description)
-	// println(musicInfo.pic.Ext)
-	// println(musicInfo.pic.MIMEType)
-	// println(musicInfo.pic.Type)
-	// println(musicInfo.pic.String())
-	// println(musicInfo.timeInSec)
-	// println(musicInfo.title)
 	m.StopCh = make(chan struct{})
 	go func() {
 		err := m.PlayMusic(filePath, sec, secOfEnd, float1, w)
@@ -149,8 +137,7 @@ func (m *Music) PlayMusic(filePath string, sec int, secOfEnd int, float1 *widget
 			fmt.Println("Stopping playback...")
 			return nil
 		}
-		// fmt.Print(m.player.IsPlaying())
-		// time.Sleep(time.Millisecond)
+
 	}
 	<-m.StopCh
 	return nil

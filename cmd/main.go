@@ -21,26 +21,6 @@ type App struct {
 	w               *app.Window
 	FolderWithMusic string
 	chosenLayer     string
-	// Buttons
-	// playPrevButton        widget.Clickable
-	// playCurrencyButton    widget.Clickable
-	// playNextButton        widget.Clickable
-	// sliderLenOfMusic      widget.Float
-	// sliderSoundVol        widget.Float
-	// optionsButton         widget.Clickable
-	// repeatButton          widget.Clickable
-	// playAllPlaylistButton widget.Clickable
-
-	// states of app
-
-	// Params of music
-	// idOfMusicInDir int
-	// lenOfMusic     float32
-
-	// // Player
-	// Player           *music.Music
-	// pathOfMusic      string
-	// MusicThatPlaying music.PlayMusic
 }
 
 func main() {

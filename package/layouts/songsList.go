@@ -26,7 +26,6 @@ func (o *SongListLayout) ListenEvents(w *app.Window, choicer *string, songsLayer
 		if o.SongsBTNS[i].Clicked() == true {
 			*choicer = "songs"
 			songsLayer.SetNewMusic(i, o.PlayLists[i].MusicPath, w)
-			// songsLayer.
 		}
 	}
 }

@@ -8,8 +8,7 @@ import (
 )
 
 type MainLayout struct {
-	optionButton widget.Clickable
-	//
+	optionButton    widget.Clickable
 	optionSongs     widget.Clickable
 	optionPlayLists widget.Clickable
 	optionThisSong  widget.Clickable
