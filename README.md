@@ -6,18 +6,23 @@
 <p>To switch layouts app using switch cases.</p>
 
 ## Work with application through makefile
+<p>How to install make on windows https://linuxhint.com/install-use-make-windows/</p>
 <b>Download dependencies</b>
+
 ```
 make install-depends
 ```
 <b>Build for windows</b>
+
 ```
 make build-win
 ```
 <b>Running</b>
+
 ```
 make run
 ```
+
 ## Architecture of application
 <b>App</b> 
 ```
