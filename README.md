@@ -122,6 +122,7 @@ make run
 ```
 
 ### How working Player?
+#### Structures
 <b>Music</b>
 ```
 {
